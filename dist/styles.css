@@ -48,7 +48,16 @@ body {
 }
 
 .sidebar-item {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.sidebar-item-title {
   font-size: 20px;
   font-weight: 500;
-  cursor: pointer;
+}
+
+.sidebar-item-edit-button {
+  height: 23px;
 }
