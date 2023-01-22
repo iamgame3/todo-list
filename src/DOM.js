@@ -1,5 +1,6 @@
 import editIconSrc from "./icons/dots-vertical.svg";
 
+// Add edit buttons to projects and tasks (temporary)
 const addEditButton = () => {
   const testItem = document.querySelector(".sidebar-item");
   const testItem2 = document.querySelector(".todo-item");
@@ -17,4 +18,25 @@ const addEditButton = () => {
   testItem2.appendChild(editIcon2);
 };
 
-export default addEditButton;
+// Create open/close controls for all modals
+const modalControls = () => {
+  const addNewProject = document.getElementById("new-project");
+  const projectModal = document.querySelector(".project-modal");
+  const closeButton = document.querySelector(".close-button");
+
+  addNewProject.addEventListener("click", () => {
+    projectModal.style.visibility = "visible";
+  });
+
+  closeButton.addEventListener("click", () => {
+    projectModal.style.visibility = "hidden";
+  });
+
+  projectModal.addEventListener("click", (event) => {
+    if (event.target === projectModal) {
+      projectModal.style.visibility = "hidden";
+    }
+  });
+};
+
+export { addEditButton, modalControls };

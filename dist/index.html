@@ -14,7 +14,7 @@
           <div class="sidebar-item">
             <div class="sidebar-item-title">Due Today (0/3)</div>
           </div>
-          <div class="sidebar-item">
+          <div id="new-project" class="sidebar-item" role="button">
             <div class="sidebar-item-title">+ Add New Project</div>
           </div>
         </div>
@@ -27,10 +27,35 @@
             <button class="check-button"></button>
             <div class="todo-item-title">Do 100 pushups</div>
           </div>
-          <div class="todo-item">
+          <div id="new-task" class="todo-item" role="button">
             <div class="todo-item-title">+ Add New Task</div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="project-modal">
+      <div class="modal-content">
+        <form action="javascript:addBookToLibrary();">
+          <div class="close-button-container">
+            <p class="close-button">X</p>
+          </div>
+          <div class="form-inputs">
+            <div class="form-input">
+              <label for="project-name">Project Name: *</label>
+              <input
+                type="text"
+                name="project-name"
+                id="project-name"
+                required
+              />
+            </div>
+          </div>
+          <div class="submit-button-container">
+            <button type="submit" class="submit-button">
+              Confirm New Project
+            </button>
+          </div>
+        </form>
       </div>
     </div>
     <script src="./main.js"></script>

@@ -1,3 +1,4 @@
-import addEditButton from "./DOM";
+import { addEditButton, modalControls } from "./DOM";
 
 addEditButton();
+modalControls();
