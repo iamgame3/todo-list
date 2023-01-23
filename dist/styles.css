@@ -110,7 +110,8 @@ body {
   text-decoration: line-through;
 }
 
-.project-modal {
+.project-modal,
+.task-modal {
   visibility: hidden;
   position: fixed;
   left: 0;
@@ -120,16 +121,16 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.modal-content {
+.project-modal-content,
+.task-modal-content {
   background-color: white;
   margin: auto;
   margin-top: 256px;
   border: 2px solid black;
   border-radius: 16px;
   padding: 32px;
-  padding-top: 16px;
-  width: 256px;
-  height: 128px;
+  width: fit-content;
+  height: fit-content;
 }
 
 .close-button-container {
@@ -137,7 +138,8 @@ body {
   justify-content: end;
 }
 
-.close-button {
+.project-close-button,
+.task-close-button {
   color: black;
   cursor: pointer;
   margin: 0;
@@ -165,11 +167,23 @@ label {
   letter-spacing: 0.5px;
 }
 
-input {
+input,
+textarea {
   margin-top: 16px;
 }
 
-input[type="text"] {
+textarea {
+  resize: none;
+  overflow: auto;
+}
+
+#task-description {
+  margin-top: 16px;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
   border: 1px solid black;
   border-radius: 4px;
   background-color: white;
@@ -177,18 +191,21 @@ input[type="text"] {
   padding: 8px;
 }
 
-input[type="text"]:invalid {
+input[type="text"]:invalid,
+input[type="date"]:invalid {
   border: 1px solid rgb(199, 0, 0);
 }
 
-input[type="text"]:focus-visible {
+input[type="text"]:focus-visible,
+input[type="date"]:focus-visible,
+textarea:focus-visible {
   outline: none;
 }
 
 .submit-button-container {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 32px;
 }
 
 .submit-button {

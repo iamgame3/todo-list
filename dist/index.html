@@ -34,10 +34,10 @@
       </div>
     </div>
     <div class="project-modal">
-      <div class="modal-content">
+      <div class="project-modal-content">
         <form action="javascript:addBookToLibrary();">
           <div class="close-button-container">
-            <p class="close-button">X</p>
+            <p class="project-close-button">X</p>
           </div>
           <div class="form-inputs">
             <div class="form-input">
@@ -53,6 +53,43 @@
           <div class="submit-button-container">
             <button type="submit" class="submit-button">
               Confirm New Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="task-modal">
+      <div class="task-modal-content">
+        <form action="javascript:addBookToLibrary();">
+          <div class="close-button-container">
+            <p class="task-close-button">X</p>
+          </div>
+          <div class="form-inputs">
+            <div class="form-input">
+              <label for="task">Task: *</label>
+              <input type="text" name="task" id="task" required />
+            </div>
+            <div class="form-input">
+              <label for="due-date">Due Date: *</label>
+              <input type="date" name="due-date" id="due-date" required />
+            </div>
+            <div class="form-input">
+              <label for="priority">Priority:</label>
+              <input type="text" name="priority" id="priority" />
+            </div>
+          </div>
+          <div class="form-input" id="task-description">
+            <label for="description">Description:</label>
+            <textarea
+              name="description"
+              id="description"
+              cols="30"
+              rows="10"
+            ></textarea>
+          </div>
+          <div class="submit-button-container">
+            <button type="submit" class="submit-button">
+              Confirm New Task
             </button>
           </div>
         </form>

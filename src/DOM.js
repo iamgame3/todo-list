@@ -21,20 +21,37 @@ const addEditButton = () => {
 // Create open/close controls for all modals
 const modalControls = () => {
   const addNewProject = document.getElementById("new-project");
+  const addNewTask = document.getElementById("new-task");
   const projectModal = document.querySelector(".project-modal");
-  const closeButton = document.querySelector(".close-button");
+  const taskModal = document.querySelector(".task-modal");
+  const projectCloseButton = document.querySelector(".project-close-button");
+  const taskCloseButton = document.querySelector(".project-close-button");
 
   addNewProject.addEventListener("click", () => {
     projectModal.style.visibility = "visible";
   });
 
-  closeButton.addEventListener("click", () => {
+  addNewTask.addEventListener("click", () => {
+    taskModal.style.visibility = "visible";
+  });
+
+  projectCloseButton.addEventListener("click", () => {
     projectModal.style.visibility = "hidden";
+  });
+
+  taskCloseButton.addEventListener("click", () => {
+    taskModal.style.visibility = "hidden";
   });
 
   projectModal.addEventListener("click", (event) => {
     if (event.target === projectModal) {
       projectModal.style.visibility = "hidden";
+    }
+  });
+
+  taskModal.addEventListener("click", (event) => {
+    if (event.target === taskModal) {
+      taskModal.style.visibility = "hidden";
     }
   });
 };
