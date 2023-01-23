@@ -1,21 +1,19 @@
 import editIconSrc from "./icons/dots-vertical.svg";
 
 // Add edit buttons to projects and tasks (temporary)
-const addEditButton = () => {
-  const testItem = document.querySelector(".sidebar-item");
-  const testItem2 = document.querySelector(".todo-item");
-  const editIcon = new Image();
-  const editIcon2 = new Image();
-  editIcon.src = editIconSrc;
-  editIcon.setAttribute("alt", "Vertical dotted line icon for edit options.");
-  editIcon.setAttribute("role", "button");
-  editIcon.classList.add("edit-button");
-  editIcon2.src = editIconSrc;
-  editIcon2.setAttribute("alt", "Vertical dotted line icon for edit options.");
-  editIcon2.setAttribute("role", "button");
-  editIcon2.classList.add("edit-button");
-  testItem.appendChild(editIcon);
-  testItem2.appendChild(editIcon2);
+const addEditButtons = () => {
+  const addEditButton = (item) => {
+    const editIcon = new Image();
+    editIcon.src = editIconSrc;
+    editIcon.setAttribute("alt", "Vertical dotted line icon for edit options.");
+    editIcon.setAttribute("role", "button");
+    editIcon.classList.add("edit-button");
+    item.appendChild(editIcon);
+  };
+  const testItems = document.querySelectorAll(".sidebar-item");
+  const testItems2 = document.querySelectorAll(".todo-item");
+  testItems.forEach((testItem) => addEditButton(testItem));
+  testItems2.forEach((testItem) => addEditButton(testItem));
 };
 
 // Create open/close controls for all modals
@@ -56,4 +54,4 @@ const modalControls = () => {
   });
 };
 
-export { addEditButton, modalControls };
+export { addEditButtons, modalControls };

@@ -53,7 +53,8 @@ body {
   overflow-y: auto;
 }
 
-.sidebar-item {
+.sidebar-item,
+.sidebar-item-add {
   display: flex;
   align-items: center;
   padding: 8px;
@@ -81,7 +82,8 @@ body {
   overflow-y: auto;
 }
 
-.todo-item {
+.todo-item,
+.todo-item-add {
   display: flex;
   align-items: center;
   padding: 8px;
