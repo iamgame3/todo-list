@@ -25,7 +25,7 @@ const modalControls = () => {
   const projectModal = document.querySelector(".project-modal");
   const taskModal = document.querySelector(".task-modal");
   const projectCloseButton = document.querySelector(".project-close-button");
-  const taskCloseButton = document.querySelector(".project-close-button");
+  const taskCloseButton = document.querySelector(".task-close-button");
 
   addNewProject.addEventListener("click", () => {
     projectModal.style.visibility = "visible";

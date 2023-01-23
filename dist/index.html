@@ -46,6 +46,7 @@
                 type="text"
                 name="project-name"
                 id="project-name"
+                placeholder="English Essay"
                 required
               />
             </div>
@@ -67,7 +68,13 @@
           <div class="form-inputs">
             <div class="form-input">
               <label for="task">Task: *</label>
-              <input type="text" name="task" id="task" required />
+              <input
+                type="text"
+                name="task"
+                id="task"
+                placeholder="Finish thesis statement"
+                required
+              />
             </div>
             <div class="form-input">
               <label for="due-date">Due Date: *</label>
@@ -75,7 +82,15 @@
             </div>
             <div class="form-input">
               <label for="priority">Priority:</label>
-              <input type="text" name="priority" id="priority" />
+              <input
+                type="text"
+                name="priority"
+                id="priority"
+                placeholder="2"
+                pattern="\d*"
+                oninvalid="this.setCustomValidity('Please match the format requested. E.g. \'5\'')"
+                oninput="this.setCustomValidity('')"
+              />
             </div>
           </div>
           <div class="form-input" id="task-description">
@@ -83,8 +98,8 @@
             <textarea
               name="description"
               id="description"
-              cols="30"
               rows="10"
+              placeholder="Finish final copy of thesis statement for the introduction paragraph of my essay."
             ></textarea>
           </div>
           <div class="submit-button-container">
