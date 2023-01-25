@@ -1,4 +1,22 @@
 import editIconSrc from "./icons/dots-vertical.svg";
+import { dash, newProject, newTask } from "./logic";
+
+const createNewProject = () => {
+  const title = document.getElementById("project-name").value;
+  newProject(title);
+};
+
+const createNewTask = () => {
+  const project = []; // Temporary
+  dash.push(project); // Temporary
+  const title = document.getElementById("task").value;
+  const dueDate = document.getElementById("due-date").value;
+  // eslint-disable-next-line radix
+  const priority = parseInt(document.getElementById("priority").value);
+  const descripton = document.getElementById("description").value;
+  const checked = false; // Temporary
+  newTask(project, title, dueDate, priority, descripton, checked);
+};
 
 // Add edit buttons to projects and tasks
 const addEditButtons = () => {
@@ -67,12 +85,16 @@ const modalControls = () => {
   const taskModal = document.querySelector(".task-modal");
   const projectCloseButton = document.querySelector(".project-close-button");
   const taskCloseButton = document.querySelector(".task-close-button");
+  const projectSubmitButton = document.getElementById("project-submit-button");
+  const taskSubmitButton = document.getElementById("task-submit-button");
 
   addNewProject.addEventListener("click", () => {
+    document.getElementById("project-form").reset();
     projectModal.style.visibility = "visible";
   });
 
   addNewTask.addEventListener("click", () => {
+    document.getElementById("task-form").reset();
     taskModal.style.visibility = "visible";
   });
 
@@ -94,6 +116,16 @@ const modalControls = () => {
     if (event.target === taskModal) {
       taskModal.style.visibility = "hidden";
     }
+  });
+
+  projectSubmitButton.addEventListener("click", () => {
+    createNewProject();
+    projectModal.style.visibility = "hidden";
+  });
+
+  taskSubmitButton.addEventListener("click", () => {
+    createNewTask();
+    taskModal.style.visibility = "hidden";
   });
 };
 

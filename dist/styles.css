@@ -206,7 +206,7 @@ textarea {
 }
 
 input[type="text"],
-input[type="date"],
+input[type="datetime-local"],
 textarea {
   border: 1px solid black;
   border-radius: 4px;
@@ -216,12 +216,12 @@ textarea {
 }
 
 input[type="text"]:invalid,
-input[type="date"]:invalid {
+input[type="datetime-local"]:invalid {
   border: 1px solid rgb(199, 0, 0);
 }
 
 input[type="text"]:focus-visible,
-input[type="date"]:focus-visible,
+input[type="datetime-local"]:focus-visible,
 textarea:focus-visible {
   outline: none;
 }

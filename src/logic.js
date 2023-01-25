@@ -4,21 +4,14 @@ const newProject = (title) => {
   dash.push(title);
 };
 
-const newTodoItem = (
-  project,
-  title,
-  descripton,
-  dueDate,
-  priority,
-  checked
-) => {
+const newTask = (project, title, dueDate, priority, descripton, checked) => {
   project.push({
     title,
-    descripton,
     dueDate,
     priority,
+    descripton,
     checked,
   });
 };
 
-export { dash, newProject, newTodoItem };
+export { dash, newProject, newTask };
