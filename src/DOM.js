@@ -1,5 +1,5 @@
 import editIconSrc from "./icons/dots-vertical.svg";
-import { dash, newProject, newTask } from "./logic";
+import { dashboard, newProject, newTask } from "./logic";
 
 const createDropdownHider = () => {
   window.addEventListener("click", (event) => {
@@ -84,6 +84,26 @@ const createAddNewProjectElement = () => {
   });
 };
 
+const createAddNewTaskElement = () => {
+  const todoItems = document.querySelector(".todo-items");
+  const oldAddNewTaskElement = document.getElementById("new-task");
+  oldAddNewTaskElement.remove();
+  const newAddNewTaskElement = document.createElement("div");
+  newAddNewTaskElement.classList.add("todo-item-add");
+  newAddNewTaskElement.setAttribute("id", "new-task");
+  newAddNewTaskElement.setAttribute("role", "button");
+  const newAddNewTaskElementTitle = document.createElement("div");
+  newAddNewTaskElementTitle.textContent = "+ Add New Project";
+  newAddNewTaskElement.appendChild(newAddNewTaskElementTitle);
+  todoItems.appendChild(newAddNewTaskElement);
+
+  const taskModal = document.querySelector(".task-modal");
+  newAddNewTaskElement.addEventListener("click", () => {
+    document.getElementById("task-form").reset();
+    taskModal.style.visibility = "visible";
+  });
+};
+
 const createNewProjectElement = (title) => {
   const sidebarItems = document.querySelector(".sidebar-items");
   const newProjectElement = document.createElement("div");
@@ -92,6 +112,23 @@ const createNewProjectElement = (title) => {
   newProjectElementTitle.textContent = title;
   newProjectElement.appendChild(newProjectElementTitle);
   sidebarItems.appendChild(newProjectElement);
+  addEditButtons();
+};
+
+const createNewTaskElement = (priority, title) => {
+  const todoItems = document.querySelector(".todo-items");
+  const newTaskElement = document.createElement("div");
+  newTaskElement.classList.add("todo-item");
+  const newTaskElementPriority = document.createElement("div");
+  newTaskElementPriority.textContent = `${priority}.`;
+  newTaskElement.appendChild(newTaskElementPriority);
+  const newTaskElementCheckbox = document.createElement("button");
+  newTaskElementCheckbox.classList.add("checkbox");
+  newTaskElement.appendChild(newTaskElementCheckbox);
+  const newTaskElementTitle = document.createElement("div");
+  newTaskElementTitle.textContent = title;
+  newTaskElement.appendChild(newTaskElementTitle);
+  todoItems.appendChild(newTaskElement);
   addEditButtons();
 };
 
@@ -104,7 +141,7 @@ const createNewProject = () => {
 
 const createNewTask = () => {
   const project = []; // Temporary
-  dash.push(project); // Temporary
+  dashboard.push(project); // Temporary
   const title = document.getElementById("task").value;
   const dueDate = document.getElementById("due-date").value;
   // eslint-disable-next-line radix
@@ -112,6 +149,8 @@ const createNewTask = () => {
   const descripton = document.getElementById("description").value;
   const checked = false; // Temporary
   newTask(project, title, dueDate, priority, descripton, checked);
+  createNewTaskElement(priority, title);
+  createAddNewTaskElement();
 };
 
 // Create open/close controls for all modals
@@ -120,6 +159,7 @@ const modalControls = () => {
   const addNewTask = document.getElementById("new-task");
   const projectModal = document.querySelector(".project-modal");
   const taskModal = document.querySelector(".task-modal");
+  const validityCheck = (input) => input.validity.valid;
   const projectCloseButton = document.querySelector(".project-close-button");
   const taskCloseButton = document.querySelector(".task-close-button");
   const projectSubmitButton = document.getElementById("project-submit-button");
@@ -156,13 +196,21 @@ const modalControls = () => {
   });
 
   projectSubmitButton.addEventListener("click", () => {
-    createNewProject();
-    projectModal.style.visibility = "hidden";
+    const projectModalInputs = Array.from(
+      projectModal.querySelectorAll("input")
+    );
+    if (projectModalInputs.every(validityCheck)) {
+      createNewProject();
+      projectModal.style.visibility = "hidden";
+    }
   });
 
   taskSubmitButton.addEventListener("click", () => {
-    createNewTask();
-    taskModal.style.visibility = "hidden";
+    const taskModalInputs = Array.from(taskModal.querySelectorAll("input"));
+    if (taskModalInputs.every(validityCheck)) {
+      createNewTask();
+      taskModal.style.visibility = "hidden";
+    }
   });
 };
 

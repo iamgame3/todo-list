@@ -121,7 +121,7 @@ body {
   background-color: var(--lightgray-bg);
 }
 
-.check-button {
+.checkbox {
   width: 20px;
   height: 20px;
   margin-left: 16px;
@@ -130,7 +130,7 @@ body {
   background-color: white;
 }
 
-.todo-item-title-checked {
+.todo-item-checked {
   color: var(--lightgray-text);
   text-decoration: line-through;
 }

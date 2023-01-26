@@ -1,7 +1,7 @@
-const dash = [];
+const dashboard = [];
 
 const newProject = (title) => {
-  dash.push(title);
+  dashboard.push(title);
 };
 
 const newTask = (project, title, dueDate, priority, descripton, checked) => {
@@ -14,4 +14,4 @@ const newTask = (project, title, dueDate, priority, descripton, checked) => {
   });
 };
 
-export { dash, newProject, newTask };
+export { dashboard, newProject, newTask };
