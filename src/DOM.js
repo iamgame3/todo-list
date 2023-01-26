@@ -112,6 +112,7 @@ const createNewProjectElement = (title) => {
   newProjectElementTitle.textContent = title;
   newProjectElement.appendChild(newProjectElementTitle);
   sidebarItems.appendChild(newProjectElement);
+
   addEditButtons();
 };
 
@@ -129,6 +130,17 @@ const createNewTaskElement = (priority, title) => {
   newTaskElementTitle.textContent = title;
   newTaskElement.appendChild(newTaskElementTitle);
   todoItems.appendChild(newTaskElement);
+
+  newTaskElementCheckbox.addEventListener("click", () => {
+    if (newTaskElementTitle.classList.contains("todo-item-checked")) {
+      newTaskElementTitle.classList.remove("todo-item-checked");
+      newTaskElementCheckbox.textContent = "";
+    } else {
+      newTaskElementTitle.classList.add("todo-item-checked");
+      newTaskElementCheckbox.textContent = "✓";
+    }
+  });
+
   addEditButtons();
 };
 
