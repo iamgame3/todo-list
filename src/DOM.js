@@ -70,10 +70,18 @@ const createAddNewProjectElement = () => {
   oldAddNewProjectElement.remove();
   const newAddNewProjectElement = document.createElement("div");
   newAddNewProjectElement.classList.add("sidebar-item-add");
+  newAddNewProjectElement.setAttribute("id", "new-project");
+  newAddNewProjectElement.setAttribute("role", "button");
   const newAddNewProjectElementTitle = document.createElement("div");
   newAddNewProjectElementTitle.textContent = "+ Add New Project";
   newAddNewProjectElement.appendChild(newAddNewProjectElementTitle);
   sidebarItems.appendChild(newAddNewProjectElement);
+
+  const projectModal = document.querySelector(".project-modal");
+  newAddNewProjectElement.addEventListener("click", () => {
+    document.getElementById("project-form").reset();
+    projectModal.style.visibility = "visible";
+  });
 };
 
 const createNewProjectElement = (title) => {
