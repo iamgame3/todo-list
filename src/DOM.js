@@ -109,6 +109,7 @@ const createNewProjectElement = (title) => {
   const newProjectElement = document.createElement("div");
   newProjectElement.classList.add("sidebar-item");
   const newProjectElementTitle = document.createElement("div");
+  newProjectElementTitle.classList.add("sidebar-item-title");
   newProjectElementTitle.textContent = title;
   newProjectElement.appendChild(newProjectElementTitle);
   sidebarItems.appendChild(newProjectElement);
@@ -116,7 +117,7 @@ const createNewProjectElement = (title) => {
   addEditButtons();
 };
 
-const createNewTaskElement = (priority, title) => {
+const createNewTaskElement = (priority, title, description) => {
   const todoItems = document.querySelector(".todo-items");
   const newTaskElement = document.createElement("div");
   newTaskElement.classList.add("todo-item");
@@ -127,6 +128,7 @@ const createNewTaskElement = (priority, title) => {
   newTaskElementCheckbox.classList.add("checkbox");
   newTaskElement.appendChild(newTaskElementCheckbox);
   const newTaskElementTitle = document.createElement("div");
+  newTaskElementTitle.classList.add("todo-item-title");
   newTaskElementTitle.textContent = title;
   newTaskElement.appendChild(newTaskElementTitle);
   todoItems.appendChild(newTaskElement);
@@ -138,6 +140,24 @@ const createNewTaskElement = (priority, title) => {
     } else {
       newTaskElementTitle.classList.add("todo-item-checked");
       newTaskElementCheckbox.textContent = "✓";
+    }
+  });
+
+  const newTaskElementDescription = document.createElement("div");
+  newTaskElementDescription.classList.add("todo-item-description");
+  newTaskElementDescription.textContent = description;
+  let newTaskElementDescriptionShown = false;
+
+  newTaskElementTitle.addEventListener("click", () => {
+    if (newTaskElementDescriptionShown) {
+      todoItems.removeChild(newTaskElementDescription);
+      newTaskElementDescriptionShown = false;
+    } else {
+      newTaskElement.insertAdjacentElement(
+        "afterend",
+        newTaskElementDescription
+      );
+      newTaskElementDescriptionShown = true;
     }
   });
 
@@ -158,10 +178,10 @@ const createNewTask = () => {
   const dueDate = document.getElementById("due-date").value;
   // eslint-disable-next-line radix
   const priority = parseInt(document.getElementById("priority").value);
-  const descripton = document.getElementById("description").value;
+  const description = document.getElementById("description").value;
   const checked = false; // Temporary
-  newTask(project, title, dueDate, priority, descripton, checked);
-  createNewTaskElement(priority, title);
+  newTask(project, title, dueDate, priority, description, checked);
+  createNewTaskElement(priority, title, description);
   createAddNewTaskElement();
 };
 
