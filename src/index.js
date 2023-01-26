@@ -1,4 +1,5 @@
-import { addEditButtons, modalControls } from "./DOM";
+import { addEditButtons, modalControls, createDropdownHider } from "./DOM";
 
+createDropdownHider();
 addEditButtons();
 modalControls();

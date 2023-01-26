@@ -1,21 +1,19 @@
 import editIconSrc from "./icons/dots-vertical.svg";
 import { dash, newProject, newTask } from "./logic";
 
-const createNewProject = () => {
-  const title = document.getElementById("project-name").value;
-  newProject(title);
-};
-
-const createNewTask = () => {
-  const project = []; // Temporary
-  dash.push(project); // Temporary
-  const title = document.getElementById("task").value;
-  const dueDate = document.getElementById("due-date").value;
-  // eslint-disable-next-line radix
-  const priority = parseInt(document.getElementById("priority").value);
-  const descripton = document.getElementById("description").value;
-  const checked = false; // Temporary
-  newTask(project, title, dueDate, priority, descripton, checked);
+const createDropdownHider = () => {
+  window.addEventListener("click", (event) => {
+    if (
+      !event.target.matches(".dropdown-content") &&
+      !event.target.matches(".edit-button")
+    ) {
+      const dropdowns = document.querySelectorAll(".dropdown-content");
+      dropdowns.forEach((dropdown) => {
+        // eslint-disable-next-line no-param-reassign
+        dropdown.style.visibility = "hidden";
+      });
+    }
+  });
 };
 
 // Add edit buttons to projects and tasks
@@ -57,24 +55,55 @@ const addEditButtons = () => {
     });
   };
 
-  // Make an edit button for every project and task
+  // Remove all edit buttons and then make an edit button for every project and task
+  const editButtons = document.querySelectorAll(".edit-button");
+  editButtons.forEach((editButton) => editButton.remove());
   const testItems = document.querySelectorAll(".sidebar-item");
   const testItems2 = document.querySelectorAll(".todo-item");
   testItems.forEach((testItem) => addEditButton(testItem));
   testItems2.forEach((testItem) => addEditButton(testItem));
+};
 
-  window.addEventListener("click", (event) => {
-    if (
-      !event.target.matches(".dropdown-content") &&
-      !event.target.matches(".edit-button")
-    ) {
-      const dropdowns = document.querySelectorAll(".dropdown-content");
-      dropdowns.forEach((dropdown) => {
-        // eslint-disable-next-line no-param-reassign
-        dropdown.style.visibility = "hidden";
-      });
-    }
-  });
+const createAddNewProjectElement = () => {
+  const sidebarItems = document.querySelector(".sidebar-items");
+  const oldAddNewProjectElement = document.getElementById("new-project");
+  oldAddNewProjectElement.remove();
+  const newAddNewProjectElement = document.createElement("div");
+  newAddNewProjectElement.classList.add("sidebar-item-add");
+  const newAddNewProjectElementTitle = document.createElement("div");
+  newAddNewProjectElementTitle.textContent = "+ Add New Project";
+  newAddNewProjectElement.appendChild(newAddNewProjectElementTitle);
+  sidebarItems.appendChild(newAddNewProjectElement);
+};
+
+const createNewProjectElement = (title) => {
+  const sidebarItems = document.querySelector(".sidebar-items");
+  const newProjectElement = document.createElement("div");
+  newProjectElement.classList.add("sidebar-item");
+  const newProjectElementTitle = document.createElement("div");
+  newProjectElementTitle.textContent = title;
+  newProjectElement.appendChild(newProjectElementTitle);
+  sidebarItems.appendChild(newProjectElement);
+  addEditButtons();
+};
+
+const createNewProject = () => {
+  const title = document.getElementById("project-name").value;
+  newProject(title);
+  createNewProjectElement(title);
+  createAddNewProjectElement();
+};
+
+const createNewTask = () => {
+  const project = []; // Temporary
+  dash.push(project); // Temporary
+  const title = document.getElementById("task").value;
+  const dueDate = document.getElementById("due-date").value;
+  // eslint-disable-next-line radix
+  const priority = parseInt(document.getElementById("priority").value);
+  const descripton = document.getElementById("description").value;
+  const checked = false; // Temporary
+  newTask(project, title, dueDate, priority, descripton, checked);
 };
 
 // Create open/close controls for all modals
@@ -129,4 +158,4 @@ const modalControls = () => {
   });
 };
 
-export { addEditButtons, modalControls };
+export { addEditButtons, modalControls, createDropdownHider };
