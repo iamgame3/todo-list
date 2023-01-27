@@ -33,8 +33,12 @@ const addEditButtons = () => {
     editDropdown.style.visibility = "hidden";
     editOption.textContent = "Edit";
     editOption.classList.add("dropdown-item");
+    editOption.setAttribute("id", "edit-button");
+    editOption.setAttribute("role", "button");
     removeOption.textContent = "Remove";
     removeOption.classList.add("dropdown-item");
+    removeOption.setAttribute("id", "remove-button");
+    removeOption.setAttribute("role", "button");
     editDropdown.appendChild(editOption);
     editDropdown.appendChild(removeOption);
     editButton.classList.add("edit-button");
@@ -49,9 +53,30 @@ const addEditButtons = () => {
       } else editDropdown.style.visibility = "hidden";
     });
 
-    editDropdown.addEventListener("click", () => {
-      // For some reason, making the visibility "visible" hides it, I have no idea why but it works so I'm keeping it like this
-      editDropdown.style.visibility = "visible";
+    const projectModal = document.querySelector(".project-modal");
+    const taskModal = document.querySelector(".task-modal");
+
+    editOption.addEventListener("click", () => {
+      const parentItem = editOption.closest(".item");
+      if (parentItem.classList.contains("sidebar-item")) {
+        document.getElementById("task-form").reset();
+        projectModal.style.visibility = "visible";
+      } else {
+        document.getElementById("task-form").reset();
+        taskModal.style.visibility = "visible";
+      }
+    });
+
+    removeOption.addEventListener("click", () => {
+      const parentItem = removeOption.closest(".item");
+      if (
+        parentItem.nextElementSibling.classList.contains(
+          "todo-item-description"
+        )
+      ) {
+        parentItem.nextElementSibling.remove();
+      }
+      parentItem.remove();
     });
   };
 
@@ -108,6 +133,7 @@ const createNewProjectElement = (title) => {
   const sidebarItems = document.querySelector(".sidebar-items");
   const newProjectElement = document.createElement("div");
   newProjectElement.classList.add("sidebar-item");
+  newProjectElement.classList.add("item");
   const newProjectElementTitle = document.createElement("div");
   newProjectElementTitle.classList.add("sidebar-item-title");
   newProjectElementTitle.textContent = title;
@@ -121,6 +147,7 @@ const createNewTaskElement = (priority, title, description) => {
   const todoItems = document.querySelector(".todo-items");
   const newTaskElement = document.createElement("div");
   newTaskElement.classList.add("todo-item");
+  newTaskElement.classList.add("item");
   const newTaskElementPriority = document.createElement("div");
   newTaskElementPriority.textContent = `${priority}.`;
   newTaskElement.appendChild(newTaskElementPriority);
@@ -145,7 +172,9 @@ const createNewTaskElement = (priority, title, description) => {
 
   const newTaskElementDescription = document.createElement("div");
   newTaskElementDescription.classList.add("todo-item-description");
-  newTaskElementDescription.textContent = description;
+  if (description !== "") {
+    newTaskElementDescription.textContent = description;
+  } else newTaskElementDescription.textContent = "No description available.";
   let newTaskElementDescriptionShown = false;
 
   newTaskElementTitle.addEventListener("click", () => {

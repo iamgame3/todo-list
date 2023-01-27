@@ -97,6 +97,16 @@ body {
   letter-spacing: 1px;
 }
 
+#edit-button {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+#remove-button {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
 .dropdown-item:hover {
   background-color: var(--lightgray-bg);
 }
