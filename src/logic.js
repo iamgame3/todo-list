@@ -1,15 +1,15 @@
 const dashboard = [];
 
-const newProject = (title) => {
-  dashboard.push(title);
+const newProject = () => {
+  dashboard.push([]);
 };
 
-const newTask = (project, title, dueDate, priority, descripton, checked) => {
+const newTask = (project, title, dueDate, priority, description, checked) => {
   project.push({
     title,
     dueDate,
     priority,
-    descripton,
+    description,
     checked,
   });
 };

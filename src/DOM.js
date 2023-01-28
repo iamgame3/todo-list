@@ -1,6 +1,8 @@
+/* eslint-disable radix */
 import editIconSrc from "./icons/dots-vertical.svg";
 import { dashboard, newProject, newTask } from "./logic";
 
+// Create event listeners to hide the dropdown menus when other stuff is clicked on
 const createDropdownHider = () => {
   window.addEventListener("click", (event) => {
     if (
@@ -15,6 +17,23 @@ const createDropdownHider = () => {
     }
   });
 };
+
+// // Create edit option functionality
+// const editFunctionality = (item) => {
+//   if (item.classList.contains("sidebar-item")) {
+//     const taskToEdit = item;
+//   }
+//   else {
+//     const taskToEdit = item;
+//     const taskModal = document.querySelector("task-modal");
+//     const taskModalTitle = document.getElementById("task");
+//     const taskModalDate = document.getElementById("due-date");
+//     const taskModalPriority = document.getElementById("priority");
+//     const taskModalDescription = document.getElementById("description");
+//     const taskToEditInfo = item.children;
+
+//   }
+// }
 
 // Add edit buttons to projects and tasks
 const addEditButtons = () => {
@@ -112,7 +131,7 @@ const createAddNewProjectElement = () => {
 const createAddNewTaskElement = () => {
   const todoItems = document.querySelector(".todo-items");
   const oldAddNewTaskElement = document.getElementById("new-task");
-  oldAddNewTaskElement.remove();
+  if (oldAddNewTaskElement !== null) oldAddNewTaskElement.remove();
   const newAddNewTaskElement = document.createElement("div");
   newAddNewTaskElement.classList.add("todo-item-add");
   newAddNewTaskElement.setAttribute("id", "new-task");
@@ -127,20 +146,6 @@ const createAddNewTaskElement = () => {
     document.getElementById("task-form").reset();
     taskModal.style.visibility = "visible";
   });
-};
-
-const createNewProjectElement = (title) => {
-  const sidebarItems = document.querySelector(".sidebar-items");
-  const newProjectElement = document.createElement("div");
-  newProjectElement.classList.add("sidebar-item");
-  newProjectElement.classList.add("item");
-  const newProjectElementTitle = document.createElement("div");
-  newProjectElementTitle.classList.add("sidebar-item-title");
-  newProjectElementTitle.textContent = title;
-  newProjectElement.appendChild(newProjectElementTitle);
-  sidebarItems.appendChild(newProjectElement);
-
-  addEditButtons();
 };
 
 const createNewTaskElement = (priority, title, description) => {
@@ -193,19 +198,46 @@ const createNewTaskElement = (priority, title, description) => {
   addEditButtons();
 };
 
+const createNewProjectElement = (title) => {
+  const sidebarItems = document.querySelector(".sidebar-items");
+  const newProjectElement = document.createElement("div");
+  newProjectElement.classList.add("sidebar-item");
+  newProjectElement.classList.add("item");
+  newProjectElement.setAttribute("data-project", dashboard.length - 1);
+  const newProjectElementTitle = document.createElement("div");
+  newProjectElementTitle.classList.add("sidebar-item-title");
+  newProjectElementTitle.textContent = title;
+  newProjectElement.appendChild(newProjectElementTitle);
+  sidebarItems.appendChild(newProjectElement);
+
+  addEditButtons();
+
+  newProjectElementTitle.addEventListener("click", () => {
+    const tasks = document.querySelector(".todo-items");
+    const projectNumber = newProjectElement.getAttribute("data-project");
+    tasks.setAttribute("data-project", projectNumber);
+    tasks.replaceChildren();
+    dashboard[projectNumber].forEach((task) => {
+      const taskPriority = task.priority;
+      const taskTitle = task.title;
+      const taskDescription = task.description;
+
+      createNewTaskElement(taskPriority, taskTitle, taskDescription);
+    });
+    createAddNewTaskElement();
+  });
+};
+
 const createNewProject = () => {
   const title = document.getElementById("project-name").value;
-  newProject(title);
+  newProject();
   createNewProjectElement(title);
   createAddNewProjectElement();
 };
 
-const createNewTask = () => {
-  const project = []; // Temporary
-  dashboard.push(project); // Temporary
+const createNewTask = (project) => {
   const title = document.getElementById("task").value;
   const dueDate = document.getElementById("due-date").value;
-  // eslint-disable-next-line radix
   const priority = parseInt(document.getElementById("priority").value);
   const description = document.getElementById("description").value;
   const checked = false; // Temporary
@@ -269,7 +301,10 @@ const modalControls = () => {
   taskSubmitButton.addEventListener("click", () => {
     const taskModalInputs = Array.from(taskModal.querySelectorAll("input"));
     if (taskModalInputs.every(validityCheck)) {
-      createNewTask();
+      const todoItemsContainer = document.querySelector(".todo-items");
+      const project =
+        dashboard[parseInt(todoItemsContainer.getAttribute("data-project"))];
+      createNewTask(project);
       taskModal.style.visibility = "hidden";
     }
   });
