@@ -202,7 +202,7 @@ const createAddNewTaskElement = () => {
   });
 };
 
-const createNewTaskElement = (priority, title, description) => {
+const createNewTaskElement = (priority, title, description, checked) => {
   const todoItems = document.querySelector(".todo-items");
   const newTaskElement = document.createElement("div");
   newTaskElement.classList.add("todo-item");
@@ -219,13 +219,32 @@ const createNewTaskElement = (priority, title, description) => {
   newTaskElement.appendChild(newTaskElementTitle);
   todoItems.appendChild(newTaskElement);
 
+  if (checked) {
+    newTaskElementCheckbox.textContent = "✓";
+    newTaskElementTitle.classList.add("todo-item-checked");
+  }
+
   newTaskElementCheckbox.addEventListener("click", () => {
-    if (newTaskElementTitle.classList.contains("todo-item-checked")) {
-      newTaskElementTitle.classList.remove("todo-item-checked");
+    if (
+      newTaskElement
+        .querySelector(".todo-item-title")
+        .classList.contains("todo-item-checked")
+    ) {
+      newTaskElement
+        .querySelector(".todo-item-title")
+        .classList.remove("todo-item-checked");
       newTaskElementCheckbox.textContent = "";
+      dashboard[parseInt(todoItems.getAttribute("data-project"))][
+        priority - 1
+      ].checked = false;
     } else {
-      newTaskElementTitle.classList.add("todo-item-checked");
+      newTaskElement
+        .querySelector(".todo-item-title")
+        .classList.add("todo-item-checked");
       newTaskElementCheckbox.textContent = "✓";
+      dashboard[parseInt(todoItems.getAttribute("data-project"))][
+        priority - 1
+      ].checked = true;
     }
   });
 
@@ -240,8 +259,9 @@ const resetTodoList = (projectNumber) => {
     const taskPriority = task.priority;
     const taskTitle = task.title;
     const taskDescription = task.description;
+    const taskChecked = task.checked;
 
-    createNewTaskElement(taskPriority, taskTitle, taskDescription);
+    createNewTaskElement(taskPriority, taskTitle, taskDescription, taskChecked);
   });
   createAddNewTaskElement();
 };
@@ -284,7 +304,7 @@ const createNewTask = (project) => {
   if (priority > project.length + 1) priority = project.length + 1;
   let description = document.getElementById("description").value;
   if (description === "") description = "No description available.";
-  const checked = false; // Temporary
+  const checked = false;
   let exists = false;
   if (project[priority - 1]) {
     exists = true;
