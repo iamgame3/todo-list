@@ -279,13 +279,26 @@ const createNewProject = () => {
 const createNewTask = (project) => {
   const title = document.getElementById("task").value;
   const dueDate = document.getElementById("due-date").value;
-  const priority = parseInt(document.getElementById("priority").value);
+  let priority = parseInt(document.getElementById("priority").value);
+  if (priority === 0) priority = 1;
+  if (priority > project.length + 1) priority = project.length + 1;
   let description = document.getElementById("description").value;
   if (description === "") description = "No description available.";
   const checked = false; // Temporary
-  newTask(project, title, dueDate, priority, description, checked);
-  createNewTaskElement(priority, title, description);
-  createAddNewTaskElement();
+  let exists = false;
+  if (project[priority - 1]) {
+    exists = true;
+    newTask(project, title, dueDate, priority, description, checked, exists);
+    project.forEach((task) => {
+      // eslint-disable-next-line no-param-reassign
+      task.priority = project.indexOf(task) + 1;
+    });
+    resetTodoList(dashboard.indexOf(project));
+  } else {
+    newTask(project, title, dueDate, priority, description, checked, exists);
+    createNewTaskElement(priority, title, description);
+    createAddNewTaskElement();
+  }
 };
 
 // Create open/close controls for all modals
