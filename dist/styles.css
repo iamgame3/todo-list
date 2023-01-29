@@ -164,7 +164,8 @@ body {
 }
 
 .project-modal,
-.task-modal {
+.task-modal,
+.task-edit-modal {
   visibility: hidden;
   position: fixed;
   left: 0;
@@ -175,7 +176,8 @@ body {
 }
 
 .project-modal-content,
-.task-modal-content {
+.task-modal-content,
+.task-edit-modal-content {
   background-color: white;
   margin: auto;
   margin-top: 256px;
@@ -192,7 +194,8 @@ body {
 }
 
 .project-close-button,
-.task-close-button {
+.task-close-button,
+.task-edit-close-button {
   color: black;
   cursor: pointer;
   margin: 0;

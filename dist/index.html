@@ -119,6 +119,66 @@
         </form>
       </div>
     </div>
+    <div class="task-edit-modal">
+      <div class="task-edit-modal-content">
+        <form onsubmit="return false;" id="task-form">
+          <div class="close-button-container">
+            <p class="task-edit-close-button">X</p>
+          </div>
+          <div class="form-inputs">
+            <div class="form-input">
+              <label for="task-edit">Task: *</label>
+              <input
+                type="text"
+                name="task-edit"
+                id="task-edit"
+                placeholder="Finish thesis statement"
+                required
+              />
+            </div>
+            <div class="form-input">
+              <label for="due-date-edit">Due Date: *</label>
+              <input
+                type="datetime-local"
+                name="due-date-edit"
+                id="due-date-edit"
+                required
+              />
+            </div>
+            <div class="form-input">
+              <label for="priority-edit">Priority:</label>
+              <input
+                type="text"
+                name="priority-edit"
+                id="priority-edit"
+                placeholder="2"
+                pattern="\d*"
+                oninvalid="this.setCustomValidity('Please match the format requested. E.g. \'5\'')"
+                oninput="this.setCustomValidity('')"
+              />
+            </div>
+          </div>
+          <div class="form-input" id="task-description">
+            <label for="description-edit">Description:</label>
+            <textarea
+              name="description-edit"
+              id="description-edit"
+              rows="10"
+              placeholder="Finish final copy of thesis statement for the introduction paragraph of my essay."
+            ></textarea>
+          </div>
+          <div class="submit-button-container">
+            <button
+              type="submit"
+              class="submit-button"
+              id="task-edit-submit-button"
+            >
+              Confirm Edits
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
     <script src="./main.js"></script>
   </body>
 </html>

@@ -2,6 +2,8 @@
 import editIconSrc from "./icons/dots-vertical.svg";
 import { dashboard, newProject, newTask } from "./logic";
 
+const validityCheck = (input) => input.validity.valid;
+
 // Create event listeners to hide the dropdown menus when other stuff is clicked on
 const createDropdownHider = () => {
   window.addEventListener("click", (event) => {
@@ -18,22 +20,78 @@ const createDropdownHider = () => {
   });
 };
 
-// // Create edit option functionality
-// const editFunctionality = (item) => {
-//   if (item.classList.contains("sidebar-item")) {
-//     const taskToEdit = item;
-//   }
-//   else {
-//     const taskToEdit = item;
-//     const taskModal = document.querySelector("task-modal");
-//     const taskModalTitle = document.getElementById("task");
-//     const taskModalDate = document.getElementById("due-date");
-//     const taskModalPriority = document.getElementById("priority");
-//     const taskModalDescription = document.getElementById("description");
-//     const taskToEditInfo = item.children;
+// Create task description maker
+const createDescription = (task, taskTitle, description) => {
+  if (task.nextSibling) {
+    if (task.nextSibling.classList.contains("todo-item-description"))
+      task.nextSibling.remove();
+  }
+  const tasks = document.querySelector(".todo-items");
+  const taskTitleClone = taskTitle.cloneNode(true);
+  taskTitle.replaceWith(taskTitleClone);
+  const newTaskElementDescription = document.createElement("div");
+  newTaskElementDescription.classList.add("todo-item-description");
+  newTaskElementDescription.textContent = description;
+  let newTaskElementDescriptionShown = false;
 
-//   }
-// }
+  taskTitleClone.addEventListener("click", () => {
+    if (newTaskElementDescriptionShown) {
+      tasks.removeChild(newTaskElementDescription);
+      newTaskElementDescriptionShown = false;
+    } else {
+      task.insertAdjacentElement("afterend", newTaskElementDescription);
+      newTaskElementDescriptionShown = true;
+    }
+  });
+};
+
+// Create edit option functionality
+const editFunctionality = (item) => {
+  const projectNumber = parseInt(
+    document.querySelector(".todo-items").getAttribute("data-project")
+  );
+  if (item.classList.contains("sidebar-item")) {
+    // const taskToEdit = item;
+  } else {
+    const itemPriority = item.firstChild;
+    const itemTitle = item.querySelector(".todo-item-title");
+    const taskToEdit =
+      dashboard[projectNumber][parseInt(item.firstChild.textContent) - 1];
+    const taskEditModal = document.querySelector(".task-edit-modal");
+    const taskEditModalTitle = document.getElementById("task-edit");
+    const taskEditModalDate = document.getElementById("due-date-edit");
+    const taskEditModalPriority = document.getElementById("priority-edit");
+    const taskEditModalDescription =
+      document.getElementById("description-edit");
+    const taskEditModalSubmitButton = document.getElementById(
+      "task-edit-submit-button"
+    );
+    const taskEditModalSubmitButtonClone =
+      taskEditModalSubmitButton.cloneNode(true);
+    taskEditModalTitle.value = taskToEdit.title;
+    taskEditModalDate.value = taskToEdit.dueDate;
+    taskEditModalPriority.value = taskToEdit.priority;
+    taskEditModalDescription.value = taskToEdit.description;
+
+    taskEditModalSubmitButton.replaceWith(taskEditModalSubmitButtonClone);
+
+    taskEditModalSubmitButtonClone.addEventListener("click", () => {
+      const taskEditModalInputs = Array.from(
+        taskEditModal.querySelectorAll("input")
+      );
+      if (taskEditModalInputs.every(validityCheck)) {
+        taskToEdit.title = taskEditModalTitle.value;
+        taskToEdit.dueDate = taskEditModalDate.value;
+        taskToEdit.priority = taskEditModalPriority.value;
+        taskToEdit.description = taskEditModalDescription.value;
+        itemPriority.textContent = `${taskToEdit.priority}.`;
+        itemTitle.textContent = taskToEdit.title;
+        createDescription(item, itemTitle, taskToEdit.description);
+        taskEditModal.style.visibility = "hidden";
+      }
+    });
+  }
+};
 
 // Add edit buttons to projects and tasks
 const addEditButtons = () => {
@@ -73,7 +131,7 @@ const addEditButtons = () => {
     });
 
     const projectModal = document.querySelector(".project-modal");
-    const taskModal = document.querySelector(".task-modal");
+    const taskEditModal = document.querySelector(".task-edit-modal");
 
     editOption.addEventListener("click", () => {
       const parentItem = editOption.closest(".item");
@@ -81,19 +139,15 @@ const addEditButtons = () => {
         document.getElementById("task-form").reset();
         projectModal.style.visibility = "visible";
       } else {
-        document.getElementById("task-form").reset();
-        taskModal.style.visibility = "visible";
+        editFunctionality(parentItem);
+        taskEditModal.style.visibility = "visible";
       }
     });
 
     removeOption.addEventListener("click", () => {
       const parentItem = removeOption.closest(".item");
-      if (
-        parentItem.nextElementSibling.classList.contains(
-          "todo-item-description"
-        )
-      ) {
-        parentItem.nextElementSibling.remove();
+      if (parentItem.nextSibling.classList.contains("todo-item-description")) {
+        parentItem.nextSibling.remove();
       }
       parentItem.remove();
     });
@@ -137,7 +191,7 @@ const createAddNewTaskElement = () => {
   newAddNewTaskElement.setAttribute("id", "new-task");
   newAddNewTaskElement.setAttribute("role", "button");
   const newAddNewTaskElementTitle = document.createElement("div");
-  newAddNewTaskElementTitle.textContent = "+ Add New Project";
+  newAddNewTaskElementTitle.textContent = "+ Add New Task";
   newAddNewTaskElement.appendChild(newAddNewTaskElementTitle);
   todoItems.appendChild(newAddNewTaskElement);
 
@@ -175,27 +229,21 @@ const createNewTaskElement = (priority, title, description) => {
     }
   });
 
-  const newTaskElementDescription = document.createElement("div");
-  newTaskElementDescription.classList.add("todo-item-description");
-  if (description !== "") {
-    newTaskElementDescription.textContent = description;
-  } else newTaskElementDescription.textContent = "No description available.";
-  let newTaskElementDescriptionShown = false;
-
-  newTaskElementTitle.addEventListener("click", () => {
-    if (newTaskElementDescriptionShown) {
-      todoItems.removeChild(newTaskElementDescription);
-      newTaskElementDescriptionShown = false;
-    } else {
-      newTaskElement.insertAdjacentElement(
-        "afterend",
-        newTaskElementDescription
-      );
-      newTaskElementDescriptionShown = true;
-    }
-  });
-
+  createDescription(newTaskElement, newTaskElementTitle, description);
   addEditButtons();
+};
+
+const resetTodoList = (projectNumber) => {
+  const tasks = document.querySelector(".todo-items");
+  tasks.replaceChildren();
+  dashboard[projectNumber].forEach((task) => {
+    const taskPriority = task.priority;
+    const taskTitle = task.title;
+    const taskDescription = task.description;
+
+    createNewTaskElement(taskPriority, taskTitle, taskDescription);
+  });
+  createAddNewTaskElement();
 };
 
 const createNewProjectElement = (title) => {
@@ -217,14 +265,7 @@ const createNewProjectElement = (title) => {
     const projectNumber = newProjectElement.getAttribute("data-project");
     tasks.setAttribute("data-project", projectNumber);
     tasks.replaceChildren();
-    dashboard[projectNumber].forEach((task) => {
-      const taskPriority = task.priority;
-      const taskTitle = task.title;
-      const taskDescription = task.description;
-
-      createNewTaskElement(taskPriority, taskTitle, taskDescription);
-    });
-    createAddNewTaskElement();
+    resetTodoList(projectNumber);
   });
 };
 
@@ -239,7 +280,8 @@ const createNewTask = (project) => {
   const title = document.getElementById("task").value;
   const dueDate = document.getElementById("due-date").value;
   const priority = parseInt(document.getElementById("priority").value);
-  const description = document.getElementById("description").value;
+  let description = document.getElementById("description").value;
+  if (description === "") description = "No description available.";
   const checked = false; // Temporary
   newTask(project, title, dueDate, priority, description, checked);
   createNewTaskElement(priority, title, description);
@@ -252,9 +294,10 @@ const modalControls = () => {
   const addNewTask = document.getElementById("new-task");
   const projectModal = document.querySelector(".project-modal");
   const taskModal = document.querySelector(".task-modal");
-  const validityCheck = (input) => input.validity.valid;
+  const taskEditModal = document.querySelector(".task-edit-modal");
   const projectCloseButton = document.querySelector(".project-close-button");
   const taskCloseButton = document.querySelector(".task-close-button");
+  const taskEditCloseButton = document.querySelector(".task-edit-close-button");
   const projectSubmitButton = document.getElementById("project-submit-button");
   const taskSubmitButton = document.getElementById("task-submit-button");
 
@@ -276,6 +319,10 @@ const modalControls = () => {
     taskModal.style.visibility = "hidden";
   });
 
+  taskEditCloseButton.addEventListener("click", () => {
+    taskEditModal.style.visibility = "hidden";
+  });
+
   projectModal.addEventListener("click", (event) => {
     if (event.target === projectModal) {
       projectModal.style.visibility = "hidden";
@@ -285,6 +332,12 @@ const modalControls = () => {
   taskModal.addEventListener("click", (event) => {
     if (event.target === taskModal) {
       taskModal.style.visibility = "hidden";
+    }
+  });
+
+  taskEditModal.addEventListener("click", (event) => {
+    if (event.target === taskEditModal) {
+      taskEditModal.style.visibility = "hidden";
     }
   });
 
