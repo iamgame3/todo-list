@@ -321,6 +321,7 @@ const createNewTask = (project) => {
   const dueDate = document.getElementById("due-date").value;
   let priority = parseInt(document.getElementById("priority").value);
   if (priority === 0) priority = 1;
+  if (Number.isNaN(priority)) priority = Infinity;
   if (priority > project.length + 1) priority = project.length + 1;
   let description = document.getElementById("description").value;
   if (description === "") description = "No description available.";
