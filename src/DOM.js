@@ -51,7 +51,27 @@ const editFunctionality = (item) => {
     document.querySelector(".todo-items").getAttribute("data-project")
   );
   if (item.classList.contains("sidebar-item")) {
-    // const taskToEdit = item;
+    const itemTitle = item.querySelector(".sidebar-item-title");
+    const projectEditModal = document.querySelector(".project-edit-modal");
+    const projectEditModalTitle = document.getElementById("project-name-edit");
+    const projectEditModalSubmitButton = document.getElementById(
+      "project-edit-submit-button"
+    );
+    const projectEditModalSubmitButtonClone =
+      projectEditModalSubmitButton.cloneNode(true);
+    projectEditModalTitle.value = itemTitle.textContent;
+
+    projectEditModalSubmitButton.replaceWith(projectEditModalSubmitButtonClone);
+
+    projectEditModalSubmitButtonClone.addEventListener("click", () => {
+      const projectEditModalInputs = Array.from(
+        projectEditModal.querySelectorAll("input")
+      );
+      if (projectEditModalInputs.every(validityCheck)) {
+        itemTitle.textContent = projectEditModalTitle.value;
+        projectEditModal.style.visibility = "hidden";
+      }
+    });
   } else {
     const itemPriority = item.firstChild;
     const itemTitle = item.querySelector(".todo-item-title");
@@ -130,14 +150,14 @@ const addEditButtons = () => {
       } else editDropdown.style.visibility = "hidden";
     });
 
-    const projectModal = document.querySelector(".project-modal");
+    const projectEditModal = document.querySelector(".project-edit-modal");
     const taskEditModal = document.querySelector(".task-edit-modal");
 
     editOption.addEventListener("click", () => {
       const parentItem = editOption.closest(".item");
       if (parentItem.classList.contains("sidebar-item")) {
-        document.getElementById("task-form").reset();
-        projectModal.style.visibility = "visible";
+        editFunctionality(parentItem);
+        projectEditModal.style.visibility = "visible";
       } else {
         editFunctionality(parentItem);
         taskEditModal.style.visibility = "visible";
@@ -326,9 +346,13 @@ const modalControls = () => {
   const addNewProject = document.getElementById("new-project");
   const addNewTask = document.getElementById("new-task");
   const projectModal = document.querySelector(".project-modal");
+  const projectEditModal = document.querySelector(".project-edit-modal");
   const taskModal = document.querySelector(".task-modal");
   const taskEditModal = document.querySelector(".task-edit-modal");
   const projectCloseButton = document.querySelector(".project-close-button");
+  const projectEditCloseButton = document.querySelector(
+    ".project-edit-close-button"
+  );
   const taskCloseButton = document.querySelector(".task-close-button");
   const taskEditCloseButton = document.querySelector(".task-edit-close-button");
   const projectSubmitButton = document.getElementById("project-submit-button");
@@ -348,6 +372,10 @@ const modalControls = () => {
     projectModal.style.visibility = "hidden";
   });
 
+  projectEditCloseButton.addEventListener("click", () => {
+    projectEditModal.style.visibility = "hidden";
+  });
+
   taskCloseButton.addEventListener("click", () => {
     taskModal.style.visibility = "hidden";
   });
@@ -359,6 +387,12 @@ const modalControls = () => {
   projectModal.addEventListener("click", (event) => {
     if (event.target === projectModal) {
       projectModal.style.visibility = "hidden";
+    }
+  });
+
+  projectEditModal.addEventListener("click", (event) => {
+    if (event.target === projectEditModal) {
+      projectEditModal.style.visibility = "hidden";
     }
   });
 

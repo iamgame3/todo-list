@@ -166,6 +166,7 @@ body {
 }
 
 .project-modal,
+.project-edit-modal,
 .task-modal,
 .task-edit-modal {
   visibility: hidden;
@@ -178,6 +179,7 @@ body {
 }
 
 .project-modal-content,
+.project-edit-modal-content,
 .task-modal-content,
 .task-edit-modal-content {
   background-color: white;
@@ -196,6 +198,7 @@ body {
 }
 
 .project-close-button,
+.project-edit-close-button,
 .task-close-button,
 .task-edit-close-button {
   color: black;

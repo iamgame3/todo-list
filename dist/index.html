@@ -121,7 +121,7 @@
     </div>
     <div class="task-edit-modal">
       <div class="task-edit-modal-content">
-        <form onsubmit="return false;" id="task-form">
+        <form onsubmit="return false;" id="task-edit-form">
           <div class="close-button-container">
             <p class="task-edit-close-button">X</p>
           </div>
@@ -172,6 +172,36 @@
               type="submit"
               class="submit-button"
               id="task-edit-submit-button"
+            >
+              Confirm Edits
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="project-edit-modal">
+      <div class="project-edit-modal-content">
+        <form onsubmit="return false;" id="project-edit-form">
+          <div class="close-button-container">
+            <p class="project-edit-close-button">X</p>
+          </div>
+          <div class="form-inputs">
+            <div class="form-input">
+              <label for="project-name-edit">Project Name: *</label>
+              <input
+                type="text"
+                name="project-name-edit"
+                id="project-name-edit"
+                placeholder="English Essay"
+                required
+              />
+            </div>
+          </div>
+          <div class="submit-button-container">
+            <button
+              type="submit"
+              class="submit-button"
+              id="project-edit-submit-button"
             >
               Confirm Edits
             </button>
