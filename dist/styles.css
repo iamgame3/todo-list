@@ -153,6 +153,12 @@ body {
   font-size: 22px;
 }
 
+.todo-item-due-date {
+  font-size: 14px;
+  min-width: max-content;
+  margin-right: 16px;
+}
+
 .todo-item-description {
   background-color: var(--lightgray-bg);
   padding: 16px;

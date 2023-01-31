@@ -236,7 +236,13 @@ const createAddNewTaskElement = () => {
   });
 };
 
-const createNewTaskElement = (priority, title, description, checked) => {
+const createNewTaskElement = (
+  priority,
+  title,
+  dueDate,
+  description,
+  checked
+) => {
   const todoItems = document.querySelector(".todo-items");
   const project = document.querySelector(
     `[data-project='${todoItems.getAttribute("data-project")}']`
@@ -255,6 +261,10 @@ const createNewTaskElement = (priority, title, description, checked) => {
   newTaskElementTitle.classList.add("todo-item-title");
   newTaskElementTitle.textContent = title;
   newTaskElement.appendChild(newTaskElementTitle);
+  const newTaskElementDueDate = document.createElement("div");
+  newTaskElementDueDate.classList.add("todo-item-due-date");
+  newTaskElementDueDate.textContent = dueDate;
+  newTaskElement.appendChild(newTaskElementDueDate);
   todoItems.appendChild(newTaskElement);
 
   if (checked) {
@@ -306,10 +316,17 @@ const resetTodoList = (projectNumber) => {
   dashboard[projectNumber].forEach((task) => {
     const taskPriority = task.priority;
     const taskTitle = task.title;
+    const taskDueDate = task.dueDate;
     const taskDescription = task.description;
     const taskChecked = task.checked;
 
-    createNewTaskElement(taskPriority, taskTitle, taskDescription, taskChecked);
+    createNewTaskElement(
+      taskPriority,
+      taskTitle,
+      taskDueDate,
+      taskDescription,
+      taskChecked
+    );
   });
   createAddNewTaskElement();
 };
@@ -347,7 +364,17 @@ const createNewProject = () => {
 
 const createNewTask = (project) => {
   const title = document.getElementById("task").value;
-  const dueDate = document.getElementById("due-date").value;
+  let dueDate = document.getElementById("due-date").value;
+  dueDate = new Date(Date.parse(dueDate));
+  const options = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
+  dueDate = dueDate.toLocaleTimeString("en-US", options);
   let priority = parseInt(document.getElementById("priority").value);
   if (priority === 0) priority = 1;
   if (Number.isNaN(priority)) priority = Infinity;
@@ -366,7 +393,7 @@ const createNewTask = (project) => {
     resetTodoList(dashboard.indexOf(project));
   } else {
     newTask(project, title, dueDate, priority, description, checked, exists);
-    createNewTaskElement(priority, title, description);
+    createNewTaskElement(priority, title, dueDate, description, checked);
     createAddNewTaskElement();
   }
 };
