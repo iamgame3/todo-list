@@ -20,6 +20,20 @@ const createDropdownHider = () => {
   });
 };
 
+// Add project completion status
+const createProjectCompletion = (project) => {
+  const tasks =
+    dashboard[parseInt(project.getAttribute("data-project"))].length;
+  const completedTasks = parseInt(project.getAttribute("data-completed"));
+  const oldCompletion = /\(\d*\/\d*\)/;
+  let title = project.querySelector(".sidebar-item-title").textContent;
+  const completionIndex = title.search(oldCompletion) - 1;
+  title = title.substring(0, completionIndex);
+  title = `${title} (${completedTasks}/${tasks})`;
+  // eslint-disable-next-line no-param-reassign
+  project.querySelector(".sidebar-item-title").textContent = title;
+};
+
 // Create task description maker
 const createDescription = (task, taskTitle, description) => {
   if (task.nextSibling) {
@@ -224,6 +238,10 @@ const createAddNewTaskElement = () => {
 
 const createNewTaskElement = (priority, title, description, checked) => {
   const todoItems = document.querySelector(".todo-items");
+  const project = document.querySelector(
+    `[data-project='${todoItems.getAttribute("data-project")}']`
+  );
+  createProjectCompletion(project);
   const newTaskElement = document.createElement("div");
   newTaskElement.classList.add("todo-item");
   newTaskElement.classList.add("item");
@@ -257,6 +275,11 @@ const createNewTaskElement = (priority, title, description, checked) => {
       dashboard[parseInt(todoItems.getAttribute("data-project"))][
         priority - 1
       ].checked = false;
+      project.setAttribute(
+        "data-completed",
+        parseInt(project.getAttribute("data-completed")) - 1
+      );
+      createProjectCompletion(project);
     } else {
       newTaskElement
         .querySelector(".todo-item-title")
@@ -265,6 +288,11 @@ const createNewTaskElement = (priority, title, description, checked) => {
       dashboard[parseInt(todoItems.getAttribute("data-project"))][
         priority - 1
       ].checked = true;
+      project.setAttribute(
+        "data-completed",
+        parseInt(project.getAttribute("data-completed")) + 1
+      );
+      createProjectCompletion(project);
     }
   });
 
@@ -292,9 +320,10 @@ const createNewProjectElement = (title) => {
   newProjectElement.classList.add("sidebar-item");
   newProjectElement.classList.add("item");
   newProjectElement.setAttribute("data-project", dashboard.length - 1);
+  newProjectElement.setAttribute("data-completed", 0);
   const newProjectElementTitle = document.createElement("div");
   newProjectElementTitle.classList.add("sidebar-item-title");
-  newProjectElementTitle.textContent = title;
+  newProjectElementTitle.textContent = `${title} (0/0)`;
   newProjectElement.appendChild(newProjectElementTitle);
   sidebarItems.appendChild(newProjectElement);
 
