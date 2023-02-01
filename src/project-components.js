@@ -32,4 +32,18 @@ const createProjectCompletion = (project, dueToday) => {
   }
 };
 
-export default createProjectCompletion;
+const createOverdueTasksCount = () => {
+  const oldCount = /\(\d*\)/;
+  const overdueElement = document.querySelector(".sidebar-item-overdue");
+  let overdueTitle = overdueElement.querySelector(
+    ".sidebar-item-title"
+  ).textContent;
+  const overdueTasks = parseInt(overdueElement.getAttribute("data-tasks"));
+  const overdueTaskCountIndex = overdueTitle.search(oldCount) - 1;
+  overdueTitle = overdueTitle.substring(0, overdueTaskCountIndex);
+  overdueTitle = `${overdueTitle} (${overdueTasks})`;
+  overdueElement.querySelector(".sidebar-item-title").textContent =
+    overdueTitle;
+};
+
+export { createProjectCompletion, createOverdueTasksCount };

@@ -1,7 +1,10 @@
 /* eslint-disable radix */
-import createProjectCompletion from "./project-components";
+import {
+  createProjectCompletion,
+  createOverdueTasksCount,
+} from "./project-components";
 import { dashboard, newTask } from "./project-task-logic";
-import { today } from "./time";
+import { isToday, isOverdue } from "./time";
 import createDescription from "./task-components";
 import { addEditButtons, resetTodoList } from "./project-task-components";
 
@@ -78,13 +81,36 @@ const createNewTaskElement = (
         "data-completed",
         parseInt(project.getAttribute("data-completed")) - 1
       );
-      if (today(dueDate)) {
+      if (isToday(dueDate) && isOverdue(dueDate)) {
+        const dueToday = document.querySelector(".sidebar-item-today");
+        dueToday.setAttribute(
+          "data-completed",
+          parseInt(dueToday.getAttribute("data-completed")) - 1
+        );
+        const overdue = document.querySelector(".sidebar-item-overdue");
+        overdue.setAttribute(
+          "data-tasks",
+          parseInt(overdue.getAttribute("data-tasks")) + 1
+        );
+        createProjectCompletion(project, true);
+        createOverdueTasksCount();
+      }
+      if (isToday(dueDate) && !isOverdue(dueDate)) {
         const dueToday = document.querySelector(".sidebar-item-today");
         dueToday.setAttribute(
           "data-completed",
           parseInt(dueToday.getAttribute("data-completed")) - 1
         );
         createProjectCompletion(project, true);
+      }
+      if (isOverdue(dueDate) && !isToday(dueDate)) {
+        const overdue = document.querySelector(".sidebar-item-overdue");
+        overdue.setAttribute(
+          "data-tasks",
+          parseInt(overdue.getAttribute("data-tasks")) + 1
+        );
+        createOverdueTasksCount();
+        createProjectCompletion(project, false);
       } else createProjectCompletion(project, false);
     } else {
       newTaskElement
@@ -98,13 +124,36 @@ const createNewTaskElement = (
         "data-completed",
         parseInt(project.getAttribute("data-completed")) + 1
       );
-      if (today(dueDate)) {
+      if (isToday(dueDate) && isOverdue(dueDate)) {
+        const dueToday = document.querySelector(".sidebar-item-today");
+        dueToday.setAttribute(
+          "data-completed",
+          parseInt(dueToday.getAttribute("data-completed")) + 1
+        );
+        const overdue = document.querySelector(".sidebar-item-overdue");
+        overdue.setAttribute(
+          "data-tasks",
+          parseInt(overdue.getAttribute("data-tasks")) - 1
+        );
+        createProjectCompletion(project, true);
+        createOverdueTasksCount();
+      }
+      if (isToday(dueDate) && !isOverdue(dueDate)) {
         const dueToday = document.querySelector(".sidebar-item-today");
         dueToday.setAttribute(
           "data-completed",
           parseInt(dueToday.getAttribute("data-completed")) + 1
         );
         createProjectCompletion(project, true);
+      }
+      if (isOverdue(dueDate) && !isToday(dueDate)) {
+        const overdue = document.querySelector(".sidebar-item-overdue");
+        overdue.setAttribute(
+          "data-tasks",
+          parseInt(overdue.getAttribute("data-tasks")) - 1
+        );
+        createOverdueTasksCount();
+        createProjectCompletion(project, false);
       } else createProjectCompletion(project, false);
     }
   });
@@ -126,13 +175,21 @@ const createNewTask = (project) => {
     minute: "numeric",
   };
   dueDate = dueDate.toLocaleTimeString("en-US", options);
-  if (today(dueDate)) {
+  if (isToday(dueDate)) {
     const dueToday = document.querySelector(".sidebar-item-today");
     dueToday.setAttribute(
       "data-tasks",
       parseInt(dueToday.getAttribute("data-tasks")) + 1
     );
     createProjectCompletion(false, true);
+  }
+  if (isOverdue(dueDate)) {
+    const overdue = document.querySelector(".sidebar-item-overdue");
+    overdue.setAttribute(
+      "data-tasks",
+      parseInt(overdue.getAttribute("data-tasks")) + 1
+    );
+    createOverdueTasksCount();
   }
   let priority = parseInt(document.getElementById("priority").value);
   if (priority === 0) priority = 1;

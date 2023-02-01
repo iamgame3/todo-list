@@ -55,6 +55,7 @@ body {
 }
 
 .sidebar-item,
+.sidebar-item-overdue,
 .sidebar-item-today,
 .sidebar-item-add {
   display: flex;
@@ -68,6 +69,7 @@ body {
 }
 
 .sidebar-item:hover,
+.sidebar-item-overdue:hover,
 .sidebar-item-today:hover,
 .sidebar-item-add:hover {
   background-color: var(--lightgray-bg);
@@ -134,9 +136,17 @@ body {
   cursor: pointer;
 }
 
+.overdue {
+  background: rgb(255, 75, 75);
+}
+
 .todo-item:hover,
 .todo-item-add:hover {
   background-color: var(--lightgray-bg);
+}
+
+.overdue:hover {
+  background-color: rgb(255, 125, 125);
 }
 
 .checkbox {

@@ -1,8 +1,9 @@
 import { createDropdownHider, addEditButtons } from "./project-task-components";
 import modalControls from "./modal-controls";
-import { dueToday } from "./time";
+import { dueToday, overdue } from "./time";
 
 createDropdownHider();
 addEditButtons();
 modalControls();
 dueToday();
+overdue();
