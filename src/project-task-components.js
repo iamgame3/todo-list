@@ -3,6 +3,11 @@ import editIconSrc from "./icons/dots-vertical.svg";
 import { dashboard } from "./project-task-logic";
 import createDescription from "./task-components";
 import { createNewTaskElement, createAddNewTaskElement } from "./task-creation";
+import { isToday, isOverdue } from "./time";
+import {
+  createOverdueTasksCount,
+  createProjectCompletion,
+} from "./project-components";
 
 const validityCheck = (input) => input.validity.valid;
 
@@ -20,6 +25,27 @@ const createDropdownHider = () => {
       });
     }
   });
+};
+
+const resetTodoList = (projectNumber) => {
+  const tasks = document.querySelector(".todo-items");
+  tasks.replaceChildren();
+  dashboard[projectNumber].forEach((task) => {
+    const taskPriority = task.priority;
+    const taskTitle = task.title;
+    const taskDueDate = task.dueDate;
+    const taskDescription = task.description;
+    const taskChecked = task.checked;
+
+    createNewTaskElement(
+      taskPriority,
+      taskTitle,
+      taskDueDate,
+      taskDescription,
+      taskChecked
+    );
+  });
+  createAddNewTaskElement();
 };
 
 // Create edit option functionality
@@ -142,11 +168,57 @@ const addEditButtons = () => {
     });
 
     removeOption.addEventListener("click", () => {
+      const overdue = document.querySelector(".sidebar-item-overdue");
+      const dueToday = document.querySelector(".sidebar-item-today");
+      const projectIndex = parseInt(
+        document.querySelector(".todo-items").getAttribute("data-project")
+      );
+      const project = document.querySelector(
+        `[data-project='${projectIndex}']`
+      );
       const parentItem = removeOption.closest(".item");
+      let index = parentItem.firstChild.textContent.indexOf(".");
+      index =
+        parseInt(parentItem.firstChild.textContent.substring(0, index)) - 1;
+      const lastTaskIndex = dashboard[projectIndex].length - 1;
+      const task = dashboard[projectIndex][index];
       if (parentItem.nextSibling.classList.contains("todo-item-description")) {
         parentItem.nextSibling.remove();
       }
       parentItem.remove();
+      for (let i = index + 1; i < lastTaskIndex + 1; i += 1) {
+        dashboard[projectIndex][i].priority -= 1;
+      }
+      project.setAttribute(
+        "data-tasks",
+        parseInt(project.getAttribute("data-tasks")) - 1
+      );
+      if (task.checked)
+        project.setAttribute(
+          "data-completed",
+          parseInt(project.getAttribute("data-completed")) - 1
+        );
+      if (isOverdue(task.dueDate) && !task.checked) {
+        overdue.setAttribute(
+          "data-tasks",
+          parseInt(overdue.getAttribute("data-tasks")) - 1
+        );
+        createOverdueTasksCount();
+      }
+      if (isToday(task.dueDate)) {
+        if (task.checked)
+          dueToday.setAttribute(
+            "data-completed",
+            parseInt(dueToday.getAttribute("data-completed")) - 1
+          );
+        dueToday.setAttribute(
+          "data-tasks",
+          parseInt(dueToday.getAttribute("data-tasks")) - 1
+        );
+        createProjectCompletion(project, true);
+      } else createProjectCompletion(project, false);
+      dashboard[projectIndex].splice(index, 1);
+      resetTodoList(projectIndex);
     });
   };
 
@@ -157,27 +229,6 @@ const addEditButtons = () => {
   const testItems2 = document.querySelectorAll(".todo-item");
   testItems.forEach((testItem) => addEditButton(testItem));
   testItems2.forEach((testItem) => addEditButton(testItem));
-};
-
-const resetTodoList = (projectNumber) => {
-  const tasks = document.querySelector(".todo-items");
-  tasks.replaceChildren();
-  dashboard[projectNumber].forEach((task) => {
-    const taskPriority = task.priority;
-    const taskTitle = task.title;
-    const taskDueDate = task.dueDate;
-    const taskDescription = task.description;
-    const taskChecked = task.checked;
-
-    createNewTaskElement(
-      taskPriority,
-      taskTitle,
-      taskDueDate,
-      taskDescription,
-      taskChecked
-    );
-  });
-  createAddNewTaskElement();
 };
 
 export {
