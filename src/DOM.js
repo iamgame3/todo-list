@@ -4,6 +4,21 @@ import { dashboard, newProject, newTask } from "./logic";
 
 const validityCheck = (input) => input.validity.valid;
 
+const today = (task) => {
+  let todaysDate = new Date();
+  const options = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  todaysDate = todaysDate.toLocaleTimeString("en-US", options);
+  const lastComma = todaysDate.lastIndexOf(",");
+  todaysDate = todaysDate.substring(0, lastComma);
+  if (task.includes(todaysDate)) return true;
+  return false;
+};
+
 // Create event listeners to hide the dropdown menus when other stuff is clicked on
 const createDropdownHider = () => {
   window.addEventListener("click", (event) => {
@@ -21,17 +36,34 @@ const createDropdownHider = () => {
 };
 
 // Add project completion status
-const createProjectCompletion = (project) => {
-  const tasks =
-    dashboard[parseInt(project.getAttribute("data-project"))].length;
-  const completedTasks = parseInt(project.getAttribute("data-completed"));
+const createProjectCompletion = (project, dueToday) => {
   const oldCompletion = /\(\d*\/\d*\)/;
-  let title = project.querySelector(".sidebar-item-title").textContent;
-  const completionIndex = title.search(oldCompletion) - 1;
-  title = title.substring(0, completionIndex);
-  title = `${title} (${completedTasks}/${tasks})`;
-  // eslint-disable-next-line no-param-reassign
-  project.querySelector(".sidebar-item-title").textContent = title;
+  if (project) {
+    const tasks =
+      dashboard[parseInt(project.getAttribute("data-project"))].length;
+    const completedTasks = parseInt(project.getAttribute("data-completed"));
+    let title = project.querySelector(".sidebar-item-title").textContent;
+    const completionIndex = title.search(oldCompletion) - 1;
+    title = title.substring(0, completionIndex);
+    title = `${title} (${completedTasks}/${tasks})`;
+    // eslint-disable-next-line no-param-reassign
+    project.querySelector(".sidebar-item-title").textContent = title;
+  }
+  if (dueToday) {
+    const dueTodayElement = document.querySelector(".sidebar-item-today");
+    let dueTodayTitle = dueTodayElement.querySelector(
+      ".sidebar-item-title"
+    ).textContent;
+    const dueTodayTasks = parseInt(dueTodayElement.getAttribute("data-tasks"));
+    const dueTodayCompletedTasks = parseInt(
+      dueTodayElement.getAttribute("data-completed")
+    );
+    const dueTodayCompletionIndex = dueTodayTitle.search(oldCompletion) - 1;
+    dueTodayTitle = dueTodayTitle.substring(0, dueTodayCompletionIndex);
+    dueTodayTitle = `${dueTodayTitle} (${dueTodayCompletedTasks}/${dueTodayTasks})`;
+    dueTodayElement.querySelector(".sidebar-item-title").textContent =
+      dueTodayTitle;
+  }
 };
 
 // Create task description maker
@@ -289,7 +321,14 @@ const createNewTaskElement = (
         "data-completed",
         parseInt(project.getAttribute("data-completed")) - 1
       );
-      createProjectCompletion(project);
+      if (today(dueDate)) {
+        const dueToday = document.querySelector(".sidebar-item-today");
+        dueToday.setAttribute(
+          "data-completed",
+          parseInt(dueToday.getAttribute("data-completed")) - 1
+        );
+        createProjectCompletion(project, true);
+      } else createProjectCompletion(project, false);
     } else {
       newTaskElement
         .querySelector(".todo-item-title")
@@ -302,7 +341,14 @@ const createNewTaskElement = (
         "data-completed",
         parseInt(project.getAttribute("data-completed")) + 1
       );
-      createProjectCompletion(project);
+      if (today(dueDate)) {
+        const dueToday = document.querySelector(".sidebar-item-today");
+        dueToday.setAttribute(
+          "data-completed",
+          parseInt(dueToday.getAttribute("data-completed")) + 1
+        );
+        createProjectCompletion(project, true);
+      } else createProjectCompletion(project, false);
     }
   });
 
@@ -375,6 +421,14 @@ const createNewTask = (project) => {
     minute: "numeric",
   };
   dueDate = dueDate.toLocaleTimeString("en-US", options);
+  if (today(dueDate)) {
+    const dueToday = document.querySelector(".sidebar-item-today");
+    dueToday.setAttribute(
+      "data-tasks",
+      parseInt(dueToday.getAttribute("data-tasks")) + 1
+    );
+    createProjectCompletion(false, true);
+  }
   let priority = parseInt(document.getElementById("priority").value);
   if (priority === 0) priority = 1;
   if (Number.isNaN(priority)) priority = Infinity;
@@ -398,10 +452,107 @@ const createNewTask = (project) => {
   }
 };
 
+const dueToday = () => {
+  const dueTodayElement = document.querySelector(".sidebar-item-today");
+  let numberOfTasks = 0;
+  let numberOfCompletedTasks = 0;
+  const dueTodayFunctionality = () => {
+    const tasks = document.querySelector(".todo-items");
+    tasks.replaceChildren();
+    dashboard.forEach((project) => {
+      project.forEach((task) => {
+        if (today(task.dueDate)) {
+          numberOfTasks += 1;
+          const projectElement = document.querySelector(
+            `[data-project='${dashboard.indexOf(project)}']`
+          );
+          const newTaskElement = document.createElement("div");
+          newTaskElement.classList.add("todo-item");
+          newTaskElement.classList.add("item");
+          const newTaskElementCheckbox = document.createElement("button");
+          newTaskElementCheckbox.classList.add("checkbox");
+          newTaskElement.appendChild(newTaskElementCheckbox);
+          const newTaskElementTitle = document.createElement("div");
+          newTaskElementTitle.classList.add("todo-item-title");
+          newTaskElementTitle.textContent = task.title;
+          newTaskElement.appendChild(newTaskElementTitle);
+          const newTaskElementDueDate = document.createElement("div");
+          newTaskElementDueDate.classList.add("todo-item-due-date");
+          newTaskElementDueDate.textContent = task.dueDate;
+          newTaskElement.appendChild(newTaskElementDueDate);
+          tasks.appendChild(newTaskElement);
+
+          if (task.checked) {
+            newTaskElementCheckbox.textContent = "✓";
+            newTaskElementTitle.classList.add("todo-item-checked");
+            numberOfCompletedTasks += 1;
+          }
+
+          newTaskElementCheckbox.addEventListener("click", () => {
+            if (
+              newTaskElement
+                .querySelector(".todo-item-title")
+                .classList.contains("todo-item-checked")
+            ) {
+              newTaskElement
+                .querySelector(".todo-item-title")
+                .classList.remove("todo-item-checked");
+              newTaskElementCheckbox.textContent = "";
+              // eslint-disable-next-line no-param-reassign
+              task.checked = false;
+              projectElement.setAttribute(
+                "data-completed",
+                parseInt(projectElement.getAttribute("data-completed")) - 1
+              );
+              dueTodayElement.setAttribute(
+                "data-completed",
+                parseInt(dueTodayElement.getAttribute("data-completed")) - 1
+              );
+              createProjectCompletion(projectElement, true);
+            } else {
+              newTaskElement
+                .querySelector(".todo-item-title")
+                .classList.add("todo-item-checked");
+              newTaskElementCheckbox.textContent = "✓";
+              // eslint-disable-next-line no-param-reassign
+              task.checked = true;
+              projectElement.setAttribute(
+                "data-completed",
+                parseInt(projectElement.getAttribute("data-completed")) + 1
+              );
+              dueTodayElement.setAttribute(
+                "data-completed",
+                parseInt(dueTodayElement.getAttribute("data-completed")) + 1
+              );
+              createProjectCompletion(projectElement, true);
+            }
+          });
+
+          createDescription(
+            newTaskElement,
+            newTaskElementTitle,
+            task.description
+          );
+        }
+      });
+    });
+  };
+  dueTodayElement.addEventListener("click", dueTodayFunctionality);
+  window.addEventListener("load", dueTodayFunctionality);
+  dueTodayElement.setAttribute("data-tasks", numberOfTasks);
+  dueTodayElement.setAttribute("data-completed", numberOfCompletedTasks);
+  let dueTodayElementTitle = dueTodayElement.querySelector(
+    ".sidebar-item-title"
+  ).textContent;
+  dueTodayElementTitle = `${dueTodayElementTitle} (${numberOfCompletedTasks}/${numberOfTasks})`;
+  dueTodayElement.querySelector(".sidebar-item-title").textContent =
+    dueTodayElementTitle;
+  createProjectCompletion(false, true);
+};
+
 // Create open/close controls for all modals
 const modalControls = () => {
   const addNewProject = document.getElementById("new-project");
-  const addNewTask = document.getElementById("new-task");
   const projectModal = document.querySelector(".project-modal");
   const projectEditModal = document.querySelector(".project-edit-modal");
   const taskModal = document.querySelector(".task-modal");
@@ -418,11 +569,6 @@ const modalControls = () => {
   addNewProject.addEventListener("click", () => {
     document.getElementById("project-form").reset();
     projectModal.style.visibility = "visible";
-  });
-
-  addNewTask.addEventListener("click", () => {
-    document.getElementById("task-form").reset();
-    taskModal.style.visibility = "visible";
   });
 
   projectCloseButton.addEventListener("click", () => {
@@ -487,4 +633,4 @@ const modalControls = () => {
   });
 };
 
-export { addEditButtons, modalControls, createDropdownHider };
+export { addEditButtons, modalControls, createDropdownHider, dueToday };
