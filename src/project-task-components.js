@@ -245,10 +245,6 @@ const addEditButtons = () => {
         for (let i = index + 1; i < lastTaskIndex + 1; i += 1) {
           dashboard[projectIndex][i].priority -= 1;
         }
-        project.setAttribute(
-          "data-tasks",
-          parseInt(project.getAttribute("data-tasks")) - 1
-        );
         if (task.checked)
           project.setAttribute(
             "data-completed",
@@ -271,9 +267,12 @@ const addEditButtons = () => {
             "data-tasks",
             parseInt(dueToday.getAttribute("data-tasks")) - 1
           );
+          dashboard[projectIndex].splice(index, 1);
           createProjectCompletion(project, true);
-        } else createProjectCompletion(project, false);
-        dashboard[projectIndex].splice(index, 1);
+        } else {
+          createProjectCompletion(project, false);
+          dashboard[projectIndex].splice(index, 1);
+        }
         resetTodoList(projectIndex);
       }
     });
