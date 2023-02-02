@@ -6,7 +6,7 @@ import {
 import { dashboard, newTask } from "./project-task-logic";
 import { isToday, isOverdue } from "./time";
 import createDescription from "./task-components";
-import { addEditButtons, resetTodoList } from "./project-task-components";
+import { addEditButtons } from "./project-task-components";
 
 const createAddNewTaskElement = () => {
   const todoItems = document.querySelector(".todo-items");
@@ -162,6 +162,27 @@ const createNewTaskElement = (
   addEditButtons();
 };
 
+const resetTodoList = (projectNumber) => {
+  const tasks = document.querySelector(".todo-items");
+  tasks.replaceChildren();
+  dashboard[projectNumber].forEach((task) => {
+    const taskPriority = task.priority;
+    const taskTitle = task.title;
+    const taskDueDate = task.dueDate;
+    const taskDescription = task.description;
+    const taskChecked = task.checked;
+
+    createNewTaskElement(
+      taskPriority,
+      taskTitle,
+      taskDueDate,
+      taskDescription,
+      taskChecked
+    );
+  });
+  createAddNewTaskElement();
+};
+
 const createNewTask = (project) => {
   const title = document.getElementById("task").value;
   let dueDate = document.getElementById("due-date").value;
@@ -214,4 +235,9 @@ const createNewTask = (project) => {
   }
 };
 
-export { createAddNewTaskElement, createNewTaskElement, createNewTask };
+export {
+  createAddNewTaskElement,
+  createNewTaskElement,
+  resetTodoList,
+  createNewTask,
+};

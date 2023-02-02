@@ -1,5 +1,6 @@
 import { dashboard, newProject } from "./project-task-logic";
-import { addEditButtons, resetTodoList } from "./project-task-components";
+import { addEditButtons } from "./project-task-components";
+import { resetTodoList } from "./task-creation";
 
 const createAddNewProjectElement = () => {
   const sidebarItems = document.querySelector(".sidebar-items");

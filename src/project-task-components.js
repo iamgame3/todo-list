@@ -2,7 +2,6 @@
 import editIconSrc from "./icons/dots-vertical.svg";
 import { dashboard } from "./project-task-logic";
 import createDescription from "./task-components";
-import { createNewTaskElement, createAddNewTaskElement } from "./task-creation";
 import { isToday, isOverdue } from "./time";
 import {
   createOverdueTasksCount,
@@ -25,27 +24,6 @@ const createDropdownHider = () => {
       });
     }
   });
-};
-
-const resetTodoList = (projectNumber) => {
-  const tasks = document.querySelector(".todo-items");
-  tasks.replaceChildren();
-  dashboard[projectNumber].forEach((task) => {
-    const taskPriority = task.priority;
-    const taskTitle = task.title;
-    const taskDueDate = task.dueDate;
-    const taskDescription = task.description;
-    const taskChecked = task.checked;
-
-    createNewTaskElement(
-      taskPriority,
-      taskTitle,
-      taskDueDate,
-      taskDescription,
-      taskChecked
-    );
-  });
-  createAddNewTaskElement();
 };
 
 // Create edit option functionality
@@ -241,6 +219,10 @@ const addEditButtons = () => {
         ) {
           parentItem.nextSibling.remove();
         }
+        let nextTask = parentItem.nextSibling;
+        if (nextTask.classList.contains("todo-item-add")) {
+          nextTask = false;
+        }
         parentItem.remove();
         for (let i = index + 1; i < lastTaskIndex + 1; i += 1) {
           dashboard[projectIndex][i].priority -= 1;
@@ -273,7 +255,27 @@ const addEditButtons = () => {
           createProjectCompletion(project, false);
           dashboard[projectIndex].splice(index, 1);
         }
-        resetTodoList(projectIndex);
+        while (nextTask) {
+          const elementPriority = nextTask.firstChild;
+          const periodIndex = elementPriority.textContent.indexOf(".");
+          const elementPriorityNoPeriod = elementPriority.textContent.substring(
+            0,
+            periodIndex
+          );
+          const newElementPriority = `${
+            parseInt(elementPriorityNoPeriod) - 1
+          }.`;
+          elementPriority.textContent = newElementPriority;
+          nextTask = nextTask.nextSibling;
+          if (nextTask) {
+            if (nextTask.classList.contains("todo-item-description")) {
+              nextTask = nextTask.nextSibling;
+            }
+            if (nextTask.classList.contains("todo-item-add")) {
+              nextTask = false;
+            }
+          }
+        }
       }
     });
   };
@@ -287,9 +289,4 @@ const addEditButtons = () => {
   testItems2.forEach((testItem) => addEditButton(testItem));
 };
 
-export {
-  createDropdownHider,
-  editFunctionality,
-  addEditButtons,
-  resetTodoList,
-};
+export { createDropdownHider, editFunctionality, addEditButtons };
