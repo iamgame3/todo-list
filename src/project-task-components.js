@@ -40,7 +40,17 @@ const editFunctionality = (item) => {
     );
     const projectEditModalSubmitButtonClone =
       projectEditModalSubmitButton.cloneNode(true);
-    projectEditModalTitle.value = itemTitle.textContent;
+    const projectCompletionRegex = /\(\d*\/\d*\)/;
+    const projectCompletionIndex = itemTitle.textContent.search(
+      projectCompletionRegex
+    );
+    const projectCompletion = itemTitle.textContent.substring(
+      projectCompletionIndex
+    );
+    projectEditModalTitle.value = itemTitle.textContent.substring(
+      0,
+      projectCompletionIndex - 1
+    );
 
     projectEditModalSubmitButton.replaceWith(projectEditModalSubmitButtonClone);
 
@@ -49,7 +59,7 @@ const editFunctionality = (item) => {
         projectEditModal.querySelectorAll("input")
       );
       if (projectEditModalInputs.every(validityCheck)) {
-        itemTitle.textContent = projectEditModalTitle.value;
+        itemTitle.textContent = `${projectEditModalTitle.value} ${projectCompletion}`;
         projectEditModal.style.visibility = "hidden";
       }
     });
