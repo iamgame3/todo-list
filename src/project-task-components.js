@@ -170,55 +170,112 @@ const addEditButtons = () => {
     removeOption.addEventListener("click", () => {
       const overdue = document.querySelector(".sidebar-item-overdue");
       const dueToday = document.querySelector(".sidebar-item-today");
-      const projectIndex = parseInt(
-        document.querySelector(".todo-items").getAttribute("data-project")
-      );
-      const project = document.querySelector(
-        `[data-project='${projectIndex}']`
-      );
       const parentItem = removeOption.closest(".item");
-      let index = parentItem.firstChild.textContent.indexOf(".");
-      index =
-        parseInt(parentItem.firstChild.textContent.substring(0, index)) - 1;
-      const lastTaskIndex = dashboard[projectIndex].length - 1;
-      const task = dashboard[projectIndex][index];
-      if (parentItem.nextSibling.classList.contains("todo-item-description")) {
-        parentItem.nextSibling.remove();
-      }
-      parentItem.remove();
-      for (let i = index + 1; i < lastTaskIndex + 1; i += 1) {
-        dashboard[projectIndex][i].priority -= 1;
-      }
-      project.setAttribute(
-        "data-tasks",
-        parseInt(project.getAttribute("data-tasks")) - 1
-      );
-      if (task.checked)
-        project.setAttribute(
-          "data-completed",
-          parseInt(project.getAttribute("data-completed")) - 1
+      if (parentItem.classList.contains("sidebar-item")) {
+        const projectIndex = parseInt(parentItem.getAttribute("data-project"));
+        const lastProjectIndex = dashboard.length - 1;
+        const currentTodoListProject = parseInt(
+          document.querySelector(".todo-items").getAttribute("data-project")
         );
-      if (isOverdue(task.dueDate) && !task.checked) {
-        overdue.setAttribute(
-          "data-tasks",
-          parseInt(overdue.getAttribute("data-tasks")) - 1
+        const currentTodoListProjectElement = document.querySelector(
+          `[data-project='${currentTodoListProject}']`
         );
-        createOverdueTasksCount();
-      }
-      if (isToday(task.dueDate)) {
-        if (task.checked)
-          dueToday.setAttribute(
-            "data-completed",
-            parseInt(dueToday.getAttribute("data-completed")) - 1
+        parentItem.remove();
+        for (let i = projectIndex + 1; i < lastProjectIndex + 1; i += 1) {
+          const selectedProject = document.querySelector(
+            `[data-project='${i}']`
           );
-        dueToday.setAttribute(
-          "data-tasks",
-          parseInt(dueToday.getAttribute("data-tasks")) - 1
+          selectedProject.setAttribute(
+            "data-project",
+            parseInt(selectedProject.getAttribute("data-project")) - 1
+          );
+        }
+        dashboard[projectIndex].forEach((task) => {
+          if (isOverdue(task.dueDate) && !task.checked) {
+            overdue.setAttribute(
+              "data-tasks",
+              parseInt(overdue.getAttribute("data-tasks")) - 1
+            );
+            createOverdueTasksCount();
+          }
+          if (isToday(task.dueDate)) {
+            if (task.checked)
+              dueToday.setAttribute(
+                "data-completed",
+                parseInt(dueToday.getAttribute("data-completed")) - 1
+              );
+            dueToday.setAttribute(
+              "data-tasks",
+              parseInt(dueToday.getAttribute("data-tasks")) - 1
+            );
+            createProjectCompletion(false, true);
+          }
+        });
+        dashboard.splice(projectIndex, 1);
+        if (projectIndex === currentTodoListProject) {
+          const clickEvent = new Event("click");
+          overdue.dispatchEvent(clickEvent);
+        } else
+          document
+            .querySelector(".todo-items")
+            .setAttribute(
+              "data-project",
+              parseInt(
+                currentTodoListProjectElement.getAttribute("data-project")
+              )
+            );
+      } else {
+        const projectIndex = parseInt(
+          document.querySelector(".todo-items").getAttribute("data-project")
         );
-        createProjectCompletion(project, true);
-      } else createProjectCompletion(project, false);
-      dashboard[projectIndex].splice(index, 1);
-      resetTodoList(projectIndex);
+        const project = document.querySelector(
+          `[data-project='${projectIndex}']`
+        );
+        let index = parentItem.firstChild.textContent.indexOf(".");
+        index =
+          parseInt(parentItem.firstChild.textContent.substring(0, index)) - 1;
+        const lastTaskIndex = dashboard[projectIndex].length - 1;
+        const task = dashboard[projectIndex][index];
+        if (
+          parentItem.nextSibling.classList.contains("todo-item-description")
+        ) {
+          parentItem.nextSibling.remove();
+        }
+        parentItem.remove();
+        for (let i = index + 1; i < lastTaskIndex + 1; i += 1) {
+          dashboard[projectIndex][i].priority -= 1;
+        }
+        project.setAttribute(
+          "data-tasks",
+          parseInt(project.getAttribute("data-tasks")) - 1
+        );
+        if (task.checked)
+          project.setAttribute(
+            "data-completed",
+            parseInt(project.getAttribute("data-completed")) - 1
+          );
+        if (isOverdue(task.dueDate) && !task.checked) {
+          overdue.setAttribute(
+            "data-tasks",
+            parseInt(overdue.getAttribute("data-tasks")) - 1
+          );
+          createOverdueTasksCount();
+        }
+        if (isToday(task.dueDate)) {
+          if (task.checked)
+            dueToday.setAttribute(
+              "data-completed",
+              parseInt(dueToday.getAttribute("data-completed")) - 1
+            );
+          dueToday.setAttribute(
+            "data-tasks",
+            parseInt(dueToday.getAttribute("data-tasks")) - 1
+          );
+          createProjectCompletion(project, true);
+        } else createProjectCompletion(project, false);
+        dashboard[projectIndex].splice(index, 1);
+        resetTodoList(projectIndex);
+      }
     });
   };
 
