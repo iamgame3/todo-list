@@ -1,7 +1,6 @@
 /* eslint-disable radix */
 import editIconSrc from "./icons/dots-vertical.svg";
 import { dashboard } from "./project-task-logic";
-import createDescription from "./task-components";
 import { isToday, isOverdue } from "./time";
 import {
   createOverdueTasksCount,
@@ -24,6 +23,109 @@ const createDropdownHider = () => {
       });
     }
   });
+};
+
+const checkboxFunctionality = (
+  taskElement,
+  taskElementCheckbox,
+  todoItems,
+  priority,
+  project,
+  dueDate
+) => {
+  if (
+    taskElement
+      .querySelector(".todo-item-title")
+      .classList.contains("todo-item-checked")
+  ) {
+    taskElement
+      .querySelector(".todo-item-title")
+      .classList.remove("todo-item-checked");
+    // eslint-disable-next-line no-param-reassign
+    taskElementCheckbox.textContent = "";
+    dashboard[parseInt(todoItems.getAttribute("data-project"))][
+      priority - 1
+    ].checked = false;
+    project.setAttribute(
+      "data-completed",
+      parseInt(project.getAttribute("data-completed")) - 1
+    );
+    if (isToday(dueDate) && isOverdue(dueDate)) {
+      const dueToday = document.querySelector(".sidebar-item-today");
+      dueToday.setAttribute(
+        "data-completed",
+        parseInt(dueToday.getAttribute("data-completed")) - 1
+      );
+      const overdue = document.querySelector(".sidebar-item-overdue");
+      overdue.setAttribute(
+        "data-tasks",
+        parseInt(overdue.getAttribute("data-tasks")) + 1
+      );
+      createProjectCompletion(project, true);
+      createOverdueTasksCount();
+    }
+    if (isToday(dueDate) && !isOverdue(dueDate)) {
+      const dueToday = document.querySelector(".sidebar-item-today");
+      dueToday.setAttribute(
+        "data-completed",
+        parseInt(dueToday.getAttribute("data-completed")) - 1
+      );
+      createProjectCompletion(project, true);
+    }
+    if (isOverdue(dueDate) && !isToday(dueDate)) {
+      const overdue = document.querySelector(".sidebar-item-overdue");
+      overdue.setAttribute(
+        "data-tasks",
+        parseInt(overdue.getAttribute("data-tasks")) + 1
+      );
+      createOverdueTasksCount();
+      createProjectCompletion(project, false);
+    } else createProjectCompletion(project, false);
+  } else {
+    taskElement
+      .querySelector(".todo-item-title")
+      .classList.add("todo-item-checked");
+    // eslint-disable-next-line no-param-reassign
+    taskElementCheckbox.textContent = "✓";
+    dashboard[parseInt(todoItems.getAttribute("data-project"))][
+      priority - 1
+    ].checked = true;
+    project.setAttribute(
+      "data-completed",
+      parseInt(project.getAttribute("data-completed")) + 1
+    );
+    if (isToday(dueDate) && isOverdue(dueDate)) {
+      const dueToday = document.querySelector(".sidebar-item-today");
+      dueToday.setAttribute(
+        "data-completed",
+        parseInt(dueToday.getAttribute("data-completed")) + 1
+      );
+      const overdue = document.querySelector(".sidebar-item-overdue");
+      overdue.setAttribute(
+        "data-tasks",
+        parseInt(overdue.getAttribute("data-tasks")) - 1
+      );
+      createProjectCompletion(project, true);
+      createOverdueTasksCount();
+    }
+    if (isToday(dueDate) && !isOverdue(dueDate)) {
+      const dueToday = document.querySelector(".sidebar-item-today");
+      dueToday.setAttribute(
+        "data-completed",
+        parseInt(dueToday.getAttribute("data-completed")) + 1
+      );
+      createProjectCompletion(project, true);
+    }
+    if (isOverdue(dueDate) && !isToday(dueDate)) {
+      const overdue = document.querySelector(".sidebar-item-overdue");
+      overdue.setAttribute(
+        "data-tasks",
+        parseInt(overdue.getAttribute("data-tasks")) - 1
+      );
+      createOverdueTasksCount();
+      createProjectCompletion(project, false);
+    } else createProjectCompletion(project, false);
+  }
 };
 
 // Create edit option functionality
@@ -66,8 +168,11 @@ const editFunctionality = (item) => {
   } else {
     const itemPriority = item.firstChild;
     const itemTitle = item.querySelector(".todo-item-title");
+    const itemDueDate = item.querySelector(".todo-item-due-date");
     const taskToEdit =
       dashboard[projectNumber][parseInt(item.firstChild.textContent) - 1];
+    const previouslyOverdue = isOverdue(itemDueDate.textContent);
+    const previouslyDueToday = isToday(itemDueDate.textContent);
     const taskEditModal = document.querySelector(".task-edit-modal");
     const taskEditModalTitle = document.getElementById("task-edit");
     const taskEditModalDate = document.getElementById("due-date-edit");
@@ -80,7 +185,12 @@ const editFunctionality = (item) => {
     const taskEditModalSubmitButtonClone =
       taskEditModalSubmitButton.cloneNode(true);
     taskEditModalTitle.value = taskToEdit.title;
-    taskEditModalDate.value = taskToEdit.dueDate;
+    const timeZoneOffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
+    taskEditModalDate.value = new Date(
+      new Date(taskToEdit.dueDate).getTime() - timeZoneOffset
+    )
+      .toISOString()
+      .slice(0, -8);
     taskEditModalPriority.value = taskToEdit.priority;
     taskEditModalDescription.value = taskToEdit.description;
 
@@ -91,13 +201,198 @@ const editFunctionality = (item) => {
         taskEditModal.querySelectorAll("input")
       );
       if (taskEditModalInputs.every(validityCheck)) {
+        const overdueElement = document.querySelector(".sidebar-item-overdue");
+        const dueTodayElement = document.querySelector(".sidebar-item-today");
+        const todoItems = document.querySelector(".todo-items");
+        const dueDate = new Date(Date.parse(taskEditModalDate.value));
+        const options = {
+          weekday: "short",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        };
+        const formattedDueDate = dueDate.toLocaleTimeString("en-US", options);
+        const oldDueDate = taskToEdit.dueDate;
+        const checkbox = item.querySelector(".checkbox");
+        const checkboxClone = checkbox.cloneNode(true);
+        const oldTaskPriority = taskToEdit.priority;
+        let taskPriority = parseInt(taskEditModalPriority.value);
+        if (taskPriority === 0) taskPriority = 1;
+        if (Number.isNaN(taskPriority)) taskPriority = Infinity;
+        if (taskPriority > dashboard[projectNumber].length) {
+          taskPriority = dashboard[projectNumber].length;
+        }
+        if (taskPriority !== oldTaskPriority) {
+          if (taskPriority > oldTaskPriority) {
+            let nextTask = item.nextSibling;
+            let existingTask = null;
+            todoItems.querySelectorAll(".todo-item").forEach((task) => {
+              if (task.firstChild.textContent === `${taskPriority}.`)
+                existingTask = task;
+            });
+            if (
+              existingTask.nextSibling.classList.contains(
+                "todo-item-description"
+              )
+            ) {
+              const existingTaskDescription = existingTask.nextSibling;
+              existingTaskDescription.insertAdjacentElement("afterend", item);
+            } else existingTask.insertAdjacentElement("afterend", item);
+            if (nextTask.classList.contains("todo-item-description")) {
+              const tempTaskVar = nextTask.nextSibling;
+              item.insertAdjacentElement("afterend", nextTask);
+              nextTask = tempTaskVar;
+            }
+            for (let i = oldTaskPriority; i < taskPriority; i += 1) {
+              const elementPriority = nextTask.firstChild;
+              const periodIndex = elementPriority.textContent.indexOf(".");
+              const elementPriorityNoPeriod =
+                elementPriority.textContent.substring(0, periodIndex);
+              const newElementPriority = `${
+                parseInt(elementPriorityNoPeriod) - 1
+              }.`;
+              elementPriority.textContent = newElementPriority;
+              dashboard[parseInt(todoItems.getAttribute("data-project"))][
+                parseInt(elementPriorityNoPeriod) - 1
+              ].priority -= 1;
+              nextTask = nextTask.nextSibling;
+              if (nextTask.classList.contains("todo-item-description")) {
+                nextTask = nextTask.nextSibling;
+              }
+            }
+            dashboard[parseInt(todoItems.getAttribute("data-project"))].splice(
+              taskPriority,
+              0,
+              taskToEdit
+            );
+            dashboard[parseInt(todoItems.getAttribute("data-project"))].splice(
+              oldTaskPriority - 1,
+              1
+            );
+          }
+          if (taskPriority < oldTaskPriority) {
+            let existingTask = null;
+            todoItems.querySelectorAll(".todo-item").forEach((task) => {
+              if (task.firstChild.textContent === `${taskPriority}.`)
+                existingTask = task;
+            });
+            const possibleTaskDescription = item.nextSibling;
+            existingTask.insertAdjacentElement("beforebegin", item);
+            let nextTask = item.nextSibling;
+            if (
+              possibleTaskDescription.classList.contains(
+                "todo-item-description"
+              )
+            ) {
+              item.insertAdjacentElement("afterend", possibleTaskDescription);
+            }
+            for (let i = taskPriority; i < oldTaskPriority; i += 1) {
+              const elementPriority = nextTask.firstChild;
+              const periodIndex = elementPriority.textContent.indexOf(".");
+              const elementPriorityNoPeriod =
+                elementPriority.textContent.substring(0, periodIndex);
+              const newElementPriority = `${
+                parseInt(elementPriorityNoPeriod) + 1
+              }.`;
+              elementPriority.textContent = newElementPriority;
+              dashboard[parseInt(todoItems.getAttribute("data-project"))][
+                parseInt(elementPriorityNoPeriod) - 1
+              ].priority += 1;
+              nextTask = nextTask.nextSibling;
+              if (nextTask.classList.contains("todo-item-description")) {
+                nextTask = nextTask.nextSibling;
+              }
+            }
+            dashboard[parseInt(todoItems.getAttribute("data-project"))].splice(
+              taskPriority - 1,
+              0,
+              taskToEdit
+            );
+            dashboard[parseInt(todoItems.getAttribute("data-project"))].splice(
+              oldTaskPriority,
+              1
+            );
+          }
+        }
         taskToEdit.title = taskEditModalTitle.value;
-        taskToEdit.dueDate = taskEditModalDate.value;
-        taskToEdit.priority = taskEditModalPriority.value;
+        taskToEdit.dueDate = formattedDueDate;
+        taskToEdit.priority = taskPriority;
         taskToEdit.description = taskEditModalDescription.value;
-        itemPriority.textContent = `${taskToEdit.priority}.`;
+        const nextItem = item.nextSibling;
+        if (nextItem.classList.contains("todo-item-description"))
+          nextItem.textContent = taskToEdit.description;
+        itemPriority.textContent = `${taskPriority}.`;
         itemTitle.textContent = taskToEdit.title;
-        createDescription(item, itemTitle, taskToEdit.description);
+        itemDueDate.textContent = formattedDueDate;
+        if (
+          isOverdue(formattedDueDate) &&
+          !previouslyOverdue &&
+          !taskToEdit.checked
+        ) {
+          overdueElement.setAttribute(
+            "data-tasks",
+            parseInt(overdueElement.getAttribute("data-tasks")) + 1
+          );
+          createOverdueTasksCount();
+        }
+        if (
+          !isOverdue(formattedDueDate) &&
+          previouslyOverdue &&
+          !taskToEdit.checked
+        ) {
+          overdueElement.setAttribute(
+            "data-tasks",
+            parseInt(overdueElement.getAttribute("data-tasks")) - 1
+          );
+          createOverdueTasksCount();
+        }
+        if (isToday(formattedDueDate) && !previouslyDueToday) {
+          dueTodayElement.setAttribute(
+            "data-tasks",
+            parseInt(dueTodayElement.getAttribute("data-tasks")) + 1
+          );
+          if (taskToEdit.checked) {
+            dueTodayElement.setAttribute(
+              "data-completed",
+              parseInt(dueTodayElement.getAttribute("data-completed")) + 1
+            );
+          }
+          createProjectCompletion(false, true);
+        }
+        if (!isToday(formattedDueDate) && previouslyDueToday) {
+          dueTodayElement.setAttribute(
+            "data-tasks",
+            parseInt(dueTodayElement.getAttribute("data-tasks")) - 1
+          );
+          if (taskToEdit.checked) {
+            dueTodayElement.setAttribute(
+              "data-completed",
+              parseInt(dueTodayElement.getAttribute("data-completed")) - 1
+            );
+          }
+          createProjectCompletion(false, true);
+        }
+        if (oldDueDate !== formattedDueDate) {
+          const project = document.querySelector(
+            `[data-project='${projectNumber}']`
+          );
+          const priority = parseInt(taskToEdit.priority);
+          checkbox.replaceWith(checkboxClone);
+
+          checkboxClone.addEventListener("click", () => {
+            checkboxFunctionality(
+              item,
+              checkboxClone,
+              todoItems,
+              priority,
+              project,
+              formattedDueDate
+            );
+          });
+        }
+
         taskEditModal.style.visibility = "hidden";
       }
     });
@@ -281,7 +576,7 @@ const addEditButtons = () => {
             if (nextTask.classList.contains("todo-item-description")) {
               nextTask = nextTask.nextSibling;
             }
-            if (nextTask.classList.contains("todo-item-add")) {
+            if (nextTask && nextTask.classList.contains("todo-item-add")) {
               nextTask = false;
             }
           }
@@ -299,4 +594,9 @@ const addEditButtons = () => {
   testItems2.forEach((testItem) => addEditButton(testItem));
 };
 
-export { createDropdownHider, editFunctionality, addEditButtons };
+export {
+  createDropdownHider,
+  editFunctionality,
+  addEditButtons,
+  checkboxFunctionality,
+};

@@ -6,7 +6,10 @@ import {
 import { dashboard, newTask } from "./project-task-logic";
 import { isToday, isOverdue } from "./time";
 import createDescription from "./task-components";
-import { addEditButtons } from "./project-task-components";
+import {
+  addEditButtons,
+  checkboxFunctionality,
+} from "./project-task-components";
 
 const createAddNewTaskElement = () => {
   const todoItems = document.querySelector(".todo-items");
@@ -65,97 +68,14 @@ const createNewTaskElement = (
   }
 
   newTaskElementCheckbox.addEventListener("click", () => {
-    if (
-      newTaskElement
-        .querySelector(".todo-item-title")
-        .classList.contains("todo-item-checked")
-    ) {
-      newTaskElement
-        .querySelector(".todo-item-title")
-        .classList.remove("todo-item-checked");
-      newTaskElementCheckbox.textContent = "";
-      dashboard[parseInt(todoItems.getAttribute("data-project"))][
-        priority - 1
-      ].checked = false;
-      project.setAttribute(
-        "data-completed",
-        parseInt(project.getAttribute("data-completed")) - 1
-      );
-      if (isToday(dueDate) && isOverdue(dueDate)) {
-        const dueToday = document.querySelector(".sidebar-item-today");
-        dueToday.setAttribute(
-          "data-completed",
-          parseInt(dueToday.getAttribute("data-completed")) - 1
-        );
-        const overdue = document.querySelector(".sidebar-item-overdue");
-        overdue.setAttribute(
-          "data-tasks",
-          parseInt(overdue.getAttribute("data-tasks")) + 1
-        );
-        createProjectCompletion(project, true);
-        createOverdueTasksCount();
-      }
-      if (isToday(dueDate) && !isOverdue(dueDate)) {
-        const dueToday = document.querySelector(".sidebar-item-today");
-        dueToday.setAttribute(
-          "data-completed",
-          parseInt(dueToday.getAttribute("data-completed")) - 1
-        );
-        createProjectCompletion(project, true);
-      }
-      if (isOverdue(dueDate) && !isToday(dueDate)) {
-        const overdue = document.querySelector(".sidebar-item-overdue");
-        overdue.setAttribute(
-          "data-tasks",
-          parseInt(overdue.getAttribute("data-tasks")) + 1
-        );
-        createOverdueTasksCount();
-        createProjectCompletion(project, false);
-      } else createProjectCompletion(project, false);
-    } else {
-      newTaskElement
-        .querySelector(".todo-item-title")
-        .classList.add("todo-item-checked");
-      newTaskElementCheckbox.textContent = "✓";
-      dashboard[parseInt(todoItems.getAttribute("data-project"))][
-        priority - 1
-      ].checked = true;
-      project.setAttribute(
-        "data-completed",
-        parseInt(project.getAttribute("data-completed")) + 1
-      );
-      if (isToday(dueDate) && isOverdue(dueDate)) {
-        const dueToday = document.querySelector(".sidebar-item-today");
-        dueToday.setAttribute(
-          "data-completed",
-          parseInt(dueToday.getAttribute("data-completed")) + 1
-        );
-        const overdue = document.querySelector(".sidebar-item-overdue");
-        overdue.setAttribute(
-          "data-tasks",
-          parseInt(overdue.getAttribute("data-tasks")) - 1
-        );
-        createProjectCompletion(project, true);
-        createOverdueTasksCount();
-      }
-      if (isToday(dueDate) && !isOverdue(dueDate)) {
-        const dueToday = document.querySelector(".sidebar-item-today");
-        dueToday.setAttribute(
-          "data-completed",
-          parseInt(dueToday.getAttribute("data-completed")) + 1
-        );
-        createProjectCompletion(project, true);
-      }
-      if (isOverdue(dueDate) && !isToday(dueDate)) {
-        const overdue = document.querySelector(".sidebar-item-overdue");
-        overdue.setAttribute(
-          "data-tasks",
-          parseInt(overdue.getAttribute("data-tasks")) - 1
-        );
-        createOverdueTasksCount();
-        createProjectCompletion(project, false);
-      } else createProjectCompletion(project, false);
-    }
+    checkboxFunctionality(
+      newTaskElement,
+      newTaskElementCheckbox,
+      todoItems,
+      priority,
+      project,
+      dueDate
+    );
   });
 
   createDescription(newTaskElement, newTaskElementTitle, description);
