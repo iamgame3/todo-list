@@ -11,5 +11,4 @@ dueToday();
 overdue();
 if (storageIsAvailable("localStorage") && existingProjectsCheck()) {
   populatePage();
-  console.log("HI!");
 }

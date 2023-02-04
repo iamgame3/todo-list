@@ -98,7 +98,6 @@ const createProjectElement = (title, pageReset) => {
 const updateStorage = () => {
   localStorage.setItem("dashboard", JSON.stringify(dashboard));
   localStorage.setItem("projectNames", JSON.stringify(projectNames));
-  console.log("Yo");
 };
 
 const target = document.querySelector(".content");
@@ -108,12 +107,9 @@ const observer = new MutationObserver(callback);
 observer.observe(target, config);
 
 const populatePage = () => {
-  console.log("It worked!");
-  console.log(dashboard);
   dashboard.forEach((project) => {
     const projectIndex = dashboard.indexOf(project);
     const projectTitle = projectNames[projectIndex];
-    console.log(projectTitle);
     createProjectElement(projectTitle, projectIndex);
   });
 };

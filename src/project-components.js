@@ -1,7 +1,6 @@
 /* eslint-disable radix */
 import { dashboard } from "./project-task-logic";
 
-// Add project completion status
 const createProjectCompletion = (project, dueToday) => {
   const oldCompletion = /\(\d*\/\d*\)/;
   if (project) {

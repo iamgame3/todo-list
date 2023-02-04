@@ -9,7 +9,6 @@ import {
 
 const validityCheck = (input) => input.validity.valid;
 
-// Create event listeners to hide the dropdown menus when other stuff is clicked on
 const createDropdownHider = () => {
   window.addEventListener("click", (event) => {
     if (
@@ -128,7 +127,6 @@ const checkboxFunctionality = (
   }
 };
 
-// Create edit option functionality
 const editFunctionality = (item) => {
   const projectNumber = parseInt(
     document.querySelector(".todo-items").getAttribute("data-project")
@@ -401,9 +399,7 @@ const editFunctionality = (item) => {
   }
 };
 
-// Add edit buttons to projects and tasks
 const addEditButtons = () => {
-  // Make an edit button
   const addEditButton = (item) => {
     const editButton = document.createElement("div");
     const editIcon = new Image();
@@ -588,7 +584,6 @@ const addEditButtons = () => {
     });
   };
 
-  // Remove all edit buttons and then make an edit button for every project and task
   const editButtons = document.querySelectorAll(".edit-button");
   editButtons.forEach((editButton) => editButton.remove());
   const testItems = document.querySelectorAll(".sidebar-item");

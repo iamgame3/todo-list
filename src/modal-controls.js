@@ -5,7 +5,6 @@ import { createNewTask } from "./task-creation";
 
 const validityCheck = (input) => input.validity.valid;
 
-// Create open/close controls for all modals
 const modalControls = () => {
   const addNewProject = document.getElementById("new-project");
   const projectModal = document.querySelector(".project-modal");

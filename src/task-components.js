@@ -1,4 +1,3 @@
-// Create task description maker
 const createDescription = (task, taskTitle, description) => {
   if (task.nextSibling) {
     if (task.nextSibling.classList.contains("todo-item-description"))
