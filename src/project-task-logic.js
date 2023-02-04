@@ -1,7 +1,27 @@
-const dashboard = [];
+const dataCreation = () => {
+  if (localStorage.getItem("dashboard")) {
+    const dashboardTemp = JSON.parse(localStorage.getItem("dashboard"));
+    const projectNamesTemp = JSON.parse(localStorage.getItem("projectNames"));
+    return [dashboardTemp, projectNamesTemp];
+  }
+  const dashboardTemp = [];
+  const projectNamesTemp = [];
+  return [dashboardTemp, projectNamesTemp];
+};
 
-const newProject = () => {
+const dashboard = dataCreation()[0];
+const projectNames = dataCreation()[1];
+
+const existingProjectsCheck = () => {
+  if (localStorage.getItem("dashboard")) {
+    return true;
+  }
+  return false;
+};
+
+const newProject = (projectName) => {
   dashboard.push([]);
+  projectNames.push(projectName);
 };
 
 const newTask = (
@@ -32,4 +52,4 @@ const newTask = (
   }
 };
 
-export { dashboard, newProject, newTask };
+export { existingProjectsCheck, dashboard, projectNames, newProject, newTask };

@@ -48,7 +48,7 @@ const createNewProjectElement = (title) => {
 
 const createNewProject = () => {
   const title = document.getElementById("project-name").value;
-  newProject();
+  newProject(title);
   createNewProjectElement(title);
   createAddNewProjectElement();
 };

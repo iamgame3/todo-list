@@ -1,6 +1,6 @@
 /* eslint-disable radix */
 import editIconSrc from "./icons/dots-vertical.svg";
-import { dashboard } from "./project-task-logic";
+import { dashboard, projectNames } from "./project-task-logic";
 import { isToday, isOverdue } from "./time";
 import {
   createOverdueTasksCount,
@@ -135,6 +135,7 @@ const editFunctionality = (item) => {
   );
   if (item.classList.contains("sidebar-item")) {
     const itemTitle = item.querySelector(".sidebar-item-title");
+    const projectIndex = parseInt(item.getAttribute("data-project"));
     const projectEditModal = document.querySelector(".project-edit-modal");
     const projectEditModalTitle = document.getElementById("project-name-edit");
     const projectEditModalSubmitButton = document.getElementById(
@@ -162,6 +163,7 @@ const editFunctionality = (item) => {
       );
       if (projectEditModalInputs.every(validityCheck)) {
         itemTitle.textContent = `${projectEditModalTitle.value} ${projectCompletion}`;
+        projectNames[projectIndex] = projectEditModalTitle.value;
         projectEditModal.style.visibility = "hidden";
       }
     });
@@ -495,6 +497,7 @@ const addEditButtons = () => {
           }
         });
         dashboard.splice(projectIndex, 1);
+        projectNames.splice(projectIndex, 1);
         if (projectIndex === currentTodoListProject) {
           const clickEvent = new Event("click");
           overdue.dispatchEvent(clickEvent);
